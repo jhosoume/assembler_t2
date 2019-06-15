@@ -75,14 +75,15 @@ invert_output:
   ; zero eax to make swap
   sub eax, eax
   sub edx, edx
+  sub ebx, ebx
 invert_loop:
   cmp ecx, 0
-  jne break
+  je break
 
-  mov dh, [esp + eax]
+  mov bl, [esp + eax]
   mov dl, [esp + ecx]
-  mov [esp, eax], dl
-  mov [esp, eax], dh
+  mov [esp + eax], dl
+  mov [esp + ecx], bl
 
 
   inc eax
