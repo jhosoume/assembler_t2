@@ -1,6 +1,6 @@
 section .data
   input DD 0
-  write DD 123748
+  write DD 106406
   output DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
   negative_msg DB "Found neg", 0h
   size_neg EQU $-negative_msg
@@ -26,13 +26,40 @@ _start:
 ;   mov ecx, negative_msg
 ;   mov edx, size_neg
 ;   int 80h
+prepare_stack:
+  ; save result in the stack
+  sub esp, 13
+
+  ; zero stack positions
+  mov ecx, 12
+zeroing_loop:
+  mov BYTE [esp + ecx], 0
+  loop zeroing_loop
+
+check_negative:
+  cmp DWORD [write], 0
+  jl deal_negative
+
+deal_positive:
+  jmp WriteInteger
+
+deal_negative:
+  ; set flag indicating that number needs the minus
+  mov edi, 1
+  xor ecx, [write]
+  inc ecx
+  mov [write], ecx
+
+  mov eax, 4
+  mov ebx, 1
+  mov ecx, negative_msg
+  mov edx, size_neg
+  int 80h
 
 WriteInteger:
   ; Zero Index, ECX = indx
   ; Value = Write
   sub ecx, ecx
-  ; save result in the stack
-  sub esp, 13
 convert_loop:
   ; Gets value divided by ten
   ; Dividend
@@ -66,34 +93,40 @@ convert_loop:
   cmp DWORD [write], 0
   jne convert_loop
 
-  ; add number of algarisms to the last position of the stack
+  ; add number of algarisms (size) to the last position of the stack
   mov [esp + 12], ecx
 
 invert_output:
+  ; Size is turned into indx, indx = size - 1
   dec ecx
 
-  ; zero eax to make swap
+  ; eax is the other indx
   sub eax, eax
+  ; dl and bl are used to make swap
   sub edx, edx
   sub ebx, ebx
 invert_loop:
+  ; if the number has size 0, stop
   cmp ecx, 0
   je break
 
+  ; swaping positions
   mov bl, [esp + eax]
   mov dl, [esp + ecx]
   mov [esp + eax], dl
   mov [esp + ecx], bl
 
-
+  ; move indexes
   inc eax
   dec ecx
 
+  ; when indexes cross each other, stop
   cmp eax, ecx
   jl invert_loop
 
 
 break:
+  ; write result in the screen
   mov eax, 4
   mov ebx, 1
   mov ecx, esp
