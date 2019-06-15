@@ -1,6 +1,6 @@
 section .data
   input DD 0
-  write DD 0x42
+  write DD 0xFFFE
   brk_line DB 0x0D, 0x0A
   size  DB 0
 
@@ -28,11 +28,12 @@ getting_algs:     ;getting algarisms
   JB  sum0x30
 
 sum0x41:
-  add edx, 0x41
-  jmp continue
+  add edx, 0x37
+  JMP continue
 
 sum0x30:
   add edx, 0x30
+
 continue:
   mov [esp + ecx], edx
 
