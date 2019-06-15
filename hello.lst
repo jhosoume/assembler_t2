@@ -1,0 +1,28 @@
+     1                                  
+     2                                  
+     3                                  ;  hello.asm  a first program for nasm for Linux, Intel, gcc
+     4                                  ;
+     5                                  ; assemble:	nasm -f elf -l hello.lst  hello.asm
+     6                                  ; link:		gcc -o hello  hello.o
+     7                                  ; run:	        hello
+     8                                  ; output is:	Hello World
+     9                                  
+    10                                  	SECTION .data		; data section
+    11 00000000 48656C6C6F20576F72-     msg:	db "Hello World",10	; the string to print, 10=cr
+    12 00000009 6C640A             
+    13                                  len:	equ $-msg		; "$" means "here"
+    14                                  				; len is a value, not an address
+    15                                  
+    16                                  	SECTION .text		; code section
+    17                                          global main		; make label available to linker
+    18                                  main:				; standard  gcc  entry point
+    19                                  
+    20 00000000 BA0C000000              	mov	edx,len		; arg3, length of string to print
+    21 00000005 B9[00000000]            	mov	ecx,msg		; arg2, pointer to string
+    22 0000000A BB01000000              	mov	ebx,1		; arg1, where to write, screen
+    23 0000000F B804000000              	mov	eax,4		; write command to int 80 hex
+    24 00000014 CD80                    	int	0x80		; interrupt 80 hex, call kernel
+    25                                  
+    26 00000016 BB00000000              	mov	ebx,0		; exit code, 0=normal
+    27 0000001B B801000000              	mov	eax,1		; exit command to kernel
+    28 00000020 CD80                    	int	0x80		; interrupt 80 hex, call kernel

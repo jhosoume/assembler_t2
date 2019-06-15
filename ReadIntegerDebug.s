@@ -1,6 +1,6 @@
 section .data
   input DD 0
-  write DD 9876245
+  write DD 54168
   output DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
   negative_msg DB "Found neg", 0h
   size_neg EQU $-negative_msg
@@ -8,9 +8,9 @@ section .data
 ; section .bss
 ;   output resb 70
 
-global _start
 section .text
-_start:
+global main
+main:
   ; Get input value and stores in input
   ; mov eax, 3
   ; mov ebx, 0
@@ -46,15 +46,10 @@ deal_positive:
 deal_negative:
   ; set flag indicating that number needs the minus
   mov edi, 1
-  xor ecx, [write]
+  mov ecx, [write]
+  not ecx
   inc ecx
   mov [write], ecx
-
-  mov eax, 4
-  mov ebx, 1
-  mov ecx, negative_msg
-  mov edx, size_neg
-  int 80h
 
 WriteInteger:
   ; Zero Index, ECX = indx
@@ -78,15 +73,6 @@ convert_loop:
   ;value = value/10
   mov [write], eax
 
-  ; ; write test
-  ; mov eax, 4
-  ; mov ebx, 1
-  ; push ecx
-  ; mov ecx, write
-  ; mov edx, 1
-  ; int 80h
-  ; pop ecx
-
   ; add one number to indx
   inc ecx
   ; if value != 0 { ends loop }
@@ -96,8 +82,17 @@ convert_loop:
   ; add number of algarisms (size) to the last position of the stack
   mov [esp + 12], ecx
 
+check_minus:
+  ; check if needs minus sign
+  cmp edi, 1
+  jne invert_output
+  mov ecx, [esp + 12]
+  mov BYTE [esp + ecx], 0x2D
+  inc BYTE [esp + 12]
+
 invert_output:
   ; Size is turned into indx, indx = size - 1
+  mov ecx, [esp + 12]
   dec ecx
 
   ; eax is the other indx
@@ -123,7 +118,6 @@ invert_loop:
   ; when indexes cross each other, stop
   cmp eax, ecx
   jl invert_loop
-
 
 break:
   ; write result in the screen
