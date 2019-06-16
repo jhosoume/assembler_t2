@@ -1,5 +1,5 @@
 section .data
-  write DD -00123
+  write DD 22
 
 section .text
 extern WriteInteger

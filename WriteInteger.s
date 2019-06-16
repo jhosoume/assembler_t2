@@ -4,6 +4,7 @@ global WriteInteger
 
 WriteInteger:
     ; save result in the stack
+    ; 12 = 10 digits + 1 sign + 1 size
     enter 12, 0
 
     ; zero stack positions
@@ -17,11 +18,12 @@ WriteInteger:
     jl deal_negative
 
   deal_positive:
-    jmp WriteInteger
+    jmp main_write
 
   deal_negative:
     ; set flag indicating that number needs the minus
     mov edi, 1
+    ; transform negative
     not DWORD INPUT_INT
     inc DWORD INPUT_INT
 
@@ -60,8 +62,11 @@ WriteInteger:
     ; check if needs minus sign
     cmp edi, 1
     jne invert_output
+    ; get indx of last character
     mov ecx, [esp + 12]
+    ; adding the minus sign
     mov BYTE [esp + ecx], 0x2D
+    ; increments the total size
     inc BYTE [esp + 12]
 
   invert_output:
@@ -103,3 +108,4 @@ WriteInteger:
 
   break:
     leave
+    ret
