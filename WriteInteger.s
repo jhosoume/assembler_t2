@@ -1,3 +1,9 @@
+;-----------------------------------------------------
+; Procedure that receives an integer from the stack
+; (last stacked double word) then prints it.
+; nasm -f elf -o WriteInteger.o WriteInteger.s
+;-----------------------------------------------------
+
 %define INPUT_INT DWORD [ebp + 8]
 
 global WriteInteger
