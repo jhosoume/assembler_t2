@@ -19,6 +19,9 @@ WriteInteger:
     mov BYTE [esp + ecx], 0
     loop zeroing_loop
 
+    ; zero flag
+    mov edi, 0
+
   check_negative:
     cmp DWORD INPUT_INT, 0
     jl deal_negative

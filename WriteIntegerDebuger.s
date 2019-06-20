@@ -24,6 +24,7 @@ main:
 ;   int 80h
 
   call ReadInteger
+  ; push DWORD [write]
   push eax
   call WriteInteger
   pop eax
