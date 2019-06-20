@@ -3,6 +3,7 @@ section .data
 
 section .text
 extern WriteInteger
+extern ReadInteger
 
 global main
 main:
@@ -22,9 +23,10 @@ main:
 ;   mov edx, size_neg
 ;   int 80h
 
-  push DWORD [write]
+  call ReadInteger
+  push eax
   call WriteInteger
-  pop DWORD [write]
+  pop eax
 
   mov eax, 1
   mov ebx, 0
