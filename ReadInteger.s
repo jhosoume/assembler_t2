@@ -56,6 +56,7 @@ ReadInteger:
 
     ; if it has a minus sign, set flag
     mov edi, 1
+
   deal_negative_sign:
     mov ecx, 1
     jmp do_conversion
@@ -65,18 +66,50 @@ ReadInteger:
     jmp do_conversion
 
   do_conversion:
+    ; zero acumulator
+    mov eax, 0
+  do_conversion_loop:
+    ; check if all characters were dealt with
     cmp ecx, INPUT_SIZE
-    jge end_conv
+    jge should_neg
 
+    ; multiply old value by ten
+    mov edx, eax
+    shl eax, 3
+    add eax, edx
+    add eax, edx
 
+    sub ebx, ebx
+    ; get character in ebx
+    mov BYTE bl, [esp + ecx]
+    sub BYTE bl, 0x30
+
+    ; add new number to old result
+    add eax, ebx
+
+    ; ++indx
+    inc ecx
+    jmp do_conversion_loop
+
+  ; if flag was set, needs to change to negative
+  should_neg:
+    cmp edi, 1
+    jne end_conv
+
+  ; if number is negative, convert
+  convert_neg:
+    not eax
+    inc eax
 
   end_conv:
     ; print numbers just to see
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, esp
-    mov edx, INPUT_SIZE
-    int 80h
+    ; mov edi, esp
+    ; add edi, 2
+    ; mov eax, 4
+    ; mov ebx, 1
+    ; mov ecx, edi
+    ; mov edx, 1
+    ; int 80h
 
     ; mov eax, INPUT_SIZE
 
