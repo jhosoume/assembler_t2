@@ -5,7 +5,7 @@
 ;
 ;-----------------------------------------------------
 
-%define INPUT_SIZE   DWORD [esp + 11]
+%define INPUT_SIZE DWORD [esp + 11]
 
 global ReadInteger
 
@@ -102,7 +102,7 @@ ReadInteger:
     inc eax
 
   end_conv:
-    ; print numbers just to see
+    ; print numbers just to check
     ; mov edi, esp
     ; add edi, 2
     ; mov eax, 4

@@ -25,9 +25,17 @@ main:
 
   call ReadInteger
   ; push DWORD [write]
+  ; shl eax, 1
   push eax
   call WriteInteger
   pop eax
+
+  ; call ReadInteger
+  ; ; push DWORD [write]
+  ; shl eax, 1
+  ; push eax
+  ; call WriteInteger
+  ; pop eax
 
   mov eax, 1
   mov ebx, 0
