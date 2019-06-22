@@ -11,6 +11,7 @@
 #include "Parser.hpp"
 #include "FirstPass.hpp"
 #include "SecondPass.hpp"
+#include "Translate.hpp"
 
 using ::std::cout;
 using ::std::endl;

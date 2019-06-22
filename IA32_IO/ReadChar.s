@@ -11,7 +11,7 @@ ReadChar:
     ; save read in the stack
     ; 12 = 10 digits + 1 sign + 1 size
     enter 1, 0
-    
+
     ; get char
     mov eax, 3
     mov ebx, 0
@@ -23,6 +23,5 @@ ReadChar:
     sub eax, eax
     mov al, [esp]
 
-  break:
     leave
     ret

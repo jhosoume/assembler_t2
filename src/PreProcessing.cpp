@@ -152,7 +152,7 @@ void PreProcessor::exec() {
       --line;
     }
   }
-  macro_table.printMacros();
+  // macro_table.printMacros();
 }
 
 // Creates separation of special characters from the rest of tokens to

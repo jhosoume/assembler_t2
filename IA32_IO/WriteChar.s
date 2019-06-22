@@ -21,6 +21,5 @@ WriteChar:
     mov edx, 1
     int 80h
 
-  break:
     leave
     ret

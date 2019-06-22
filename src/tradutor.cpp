@@ -19,20 +19,23 @@ int main(int argc, char **argv) {
   // prog.showTokens();
   zero_run.writePreProcessedFile();
   FirstPass first_pass = FirstPass(parser, prog, instruction_table, directive_table);
+  SymbolTable symbol_table = first_pass.exec();
   cout << "**********************" << endl;
   cout << "Finish First Pass" << endl;
   cout << "**********************" << endl << endl;
-  SymbolTable symbol_table = first_pass.exec();
-  SecondPass second_pass = SecondPass(parser,
-                                      prog,
-                                      symbol_table,
-                                      instruction_table,
-                                      directive_table);
-  // prog.showTokens();
-  second_pass.exec();
-  second_pass.writeObjectFile();
+  // SecondPass second_pass = SecondPass(parser,
+  //                                     prog,
+  //                                     symbol_table,
+  //                                     instruction_table,
+  //                                     directive_table);
+  // // prog.showTokens();
+  // second_pass.exec();
+  // second_pass.writeObjectFile();
+  Translate translator =  Translate(parser,
+                                    prog);
+  translator.exec();
   cout << "**********************" << endl;
-  cout << "Finish Second Pass" << endl;
+  cout << "Finish Translation" << endl;
   cout << "**********************" << endl << endl;
   return 0;
 }

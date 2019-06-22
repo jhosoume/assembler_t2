@@ -6,7 +6,7 @@ extern WriteChar
 extern ReadChar
 
 global main
-main:
+main :
 
   call ReadChar
   ; push DWORD [write]
