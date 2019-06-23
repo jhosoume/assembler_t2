@@ -28,6 +28,7 @@ private:
   Parser parser;
   Program program;
   vector<string> nasm_code;
+  string stringfyOps(vector <Token>);
 
 };
 

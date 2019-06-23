@@ -26,6 +26,8 @@ main:
   call ReadInteger
   ; push DWORD [write]
   ; shl eax, 1
+  mov ebx, 2
+  imul eax, ebx
   push eax
   call WriteInteger
   pop eax

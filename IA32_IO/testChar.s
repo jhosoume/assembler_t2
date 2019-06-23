@@ -47,4 +47,4 @@ _start:
   int 80h
 
 section .data
-  write DB "K"
+  write: DB "K"
