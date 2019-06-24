@@ -1,5 +1,5 @@
 section .data
-  write DB "K"
+  write DD "K"
 
 section .text
 extern WriteChar
@@ -8,11 +8,11 @@ extern ReadChar
 global main
 main :
 
+  push DWORD write
   call ReadChar
   ; push DWORD [write]
-  push eax
   call WriteChar
-  pop eax
+  pop edx
 
   mov eax, 1
   mov ebx, 0

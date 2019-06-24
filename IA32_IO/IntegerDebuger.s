@@ -1,9 +1,9 @@
 section .data
-  write DD 22
+  write DD 0
 
 section .text
-extern WriteInteger
-extern ReadInteger
+extern WriteIntegerAddr
+extern ReadIntegerAddr
 
 global main
 main:
@@ -23,13 +23,15 @@ main:
 ;   mov edx, size_neg
 ;   int 80h
 
-  call ReadInteger
+  push DWORD write
+  call ReadIntegerAddr
   ; push DWORD [write]
   ; shl eax, 1
+  mov eax, [write]
   mov ebx, 2
   imul eax, ebx
-  push eax
-  call WriteInteger
+  mov [write], eax
+  call WriteIntegerAddr
   pop eax
 
   ; call ReadInteger

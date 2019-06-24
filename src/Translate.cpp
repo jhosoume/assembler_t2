@@ -97,19 +97,22 @@ void Translate::exec() {
       // DEALING WITH INPUT
     } else if (tokens.front().tvalue == "INPUT") {
       nasm_code.push_back("push eax\n");
-      nasm_code.push_back("call WriteInteger\n");
-      aux_string = "mov [";
-      aux_string = aux_string + stringfyOps(operands.front()) + "], eax\n";
+      aux_string = "push DWORD ";
+      aux_string = aux_string + stringfyOps(operands.front()) + "\n";
       nasm_code.push_back(aux_string);
+      nasm_code.push_back("call ReadIntegerAddr\n");
+      nasm_code.push_back("pop edx\n");
       nasm_code.push_back("pop eax\n");
 
       // DEALING WITH OUTPUT
     } else if (tokens.front().tvalue == "OUTPUT") {
-      aux_string = "push DWORD [" + stringfyOps(operands.front()) + "]\n";
+      nasm_code.push_back("push eax\n");
+      aux_string = "push DWORD ";
+      aux_string = aux_string + stringfyOps(operands.front()) + "\n";
       nasm_code.push_back(aux_string);
-      nasm_code.push_back("call WriteInteger\n");
-      aux_string = "pop DWORD [" + stringfyOps(operands.front()) + "]\n";
-      nasm_code.push_back(aux_string);
+      nasm_code.push_back("call WriteIntegerAddr\n");
+      nasm_code.push_back("pop edx\n");
+      nasm_code.push_back("pop eax\n");
 
       // DEALING WITH LOAD
     } else if (tokens.front().tvalue == "LOAD") {
@@ -122,15 +125,74 @@ void Translate::exec() {
       nasm_code.push_back(aux_string);
 
       // DEALING WITH STOP
-    } else if (tokens.front().tvalue == "STORE") {
+    } else if (tokens.front().tvalue == "STOP") {
       nasm_code.push_back("mov eax, 1\n");
       nasm_code.push_back("mov ebx, 0\n");
       nasm_code.push_back("int 80h\n");
 
+      // DEALING WITH INPUT CHAR
+    } else if (tokens.front().tvalue == "C_INPUT") {
+      nasm_code.push_back("push eax\n");
+      nasm_code.push_back("call ReadChar\n");
+      aux_string = "mov [";
+      aux_string = aux_string + stringfyOps(operands.front()) + "], eax\n";
+      nasm_code.push_back(aux_string);
+      nasm_code.push_back("pop eax\n");
+
+      // DEALING WITH OUTPUT CHAR
+    } else if (tokens.front().tvalue == "C_OUTPUT") {
+      aux_string = "push DWORD " + stringfyOps(operands.front()) + "\n";
+      nasm_code.push_back(aux_string);
+      nasm_code.push_back("call WriteChar\n");
+      nasm_code.push_back("pop edx\n");
+
+      // TODO DEALING WITH INPUT STRING
+    } else if (tokens.front().tvalue == "S_INPUT") {
+      nasm_code.push_back("push eax\n");
+      aux_string = "push DWORD " + stringfyOps(operands.front()) + "\n";
+      nasm_code.push_back(aux_string);
+      aux_string = "push DWORD " + stringfyOps(operands.back()) + "\n";
+      nasm_code.push_back(aux_string);
+      nasm_code.push_back("call ReadString\n");
+      nasm_code.push_back("pop edx\n");
+      nasm_code.push_back("pop edx\n");
+      nasm_code.push_back("pop eax\n");
+
+      // DEALING WITH OUTPUT STRING
+    } else if (tokens.front().tvalue == "S_OUTPUT") {
+      nasm_code.push_back("push eax\n");
+      aux_string = "push DWORD " + stringfyOps(operands.front()) + "\n";
+      nasm_code.push_back(aux_string);
+      aux_string = "push DWORD " + stringfyOps(operands.back()) + "\n";
+      nasm_code.push_back(aux_string);
+      nasm_code.push_back("call WriteString\n");
+      nasm_code.push_back("pop edx\n");
+      nasm_code.push_back("pop edx\n");
+      nasm_code.push_back("pop eax\n");
+
+      // DEALING WITH CONST
+    } else if (tokens.front().tvalue == "CONST") {
+      aux_string = "DD " + stringfyOps(operands.back()) + "\n";
+      nasm_code.push_back(aux_string);
+
+      // DEALING WITH SPACE
+    } else if (tokens.front().tvalue == "SPACE") {
+      if (operands.size() > 0) {
+        aux_string = "DD ";
+        for (int indx = 0; indx < std::stoi(operands.back().back().tvalue); ++indx) {
+          aux_string = aux_string + "0, ";
+        }
+        aux_string.pop_back();
+        aux_string.pop_back();
+        aux_string = aux_string + "\n";
+        nasm_code.push_back(aux_string);
+      } else {
+        aux_string = "DD 0\n";
+        nasm_code.push_back(aux_string);
+     }
+
+      //FINISH
     }
-
-
-
 
     for (const auto token : tokens) {
       cout << token.tvalue << " ";

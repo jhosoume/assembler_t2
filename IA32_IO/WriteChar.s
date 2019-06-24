@@ -5,19 +5,17 @@
 ;
 ;-----------------------------------------------------
 
-; %define INPUT_CHAR BYTE [ebp + 8]
+%define CHAR_ADDR DWORD [ebp + 8]
 
 global WriteChar
 
 WriteChar:
     enter 0, 0
 
-    mov ecx, ebp
-    add ecx, 8
-
     ; write char
     mov eax, 4
     mov ebx, 1
+    mov ecx, CHAR_ADDR
     mov edx, 1
     int 80h
 

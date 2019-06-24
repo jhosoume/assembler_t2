@@ -34,6 +34,7 @@ int main(int argc, char **argv) {
   Translate translator =  Translate(parser,
                                     prog);
   translator.exec();
+  translator.writeNasmFile();
   cout << "**********************" << endl;
   cout << "Finish Translation" << endl;
   cout << "**********************" << endl << endl;

@@ -5,6 +5,8 @@
 ;
 ;-----------------------------------------------------
 
+%define CHAR_ADDR DWORD [ebp + 8]
+
 global ReadChar
 
 ReadChar:
@@ -15,13 +17,9 @@ ReadChar:
     ; get char
     mov eax, 3
     mov ebx, 0
-    mov ecx, esp
+    mov ecx, CHAR_ADDR
     mov edx, 1
     int 80h
-
-    ; move input to eax [BYTE]
-    sub eax, eax
-    mov al, [esp]
 
     leave
     ret
