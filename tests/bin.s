@@ -5,6 +5,7 @@ global main
  section .text
  main:
  push eax
+ nop
  push DWORD OLD_DATA
  call ReadIntegerAddr
  pop edx

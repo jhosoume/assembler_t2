@@ -2,12 +2,11 @@ section .data
   write DD 0xFFFE
   brk_line DB 0x0D, 0x0A
 
-global _start
+global main
 
 section .text
 extern ReadHexa
 extern WriteHexa
-_start:
 
 main:
   call ReadHexa     ;answer in EAX

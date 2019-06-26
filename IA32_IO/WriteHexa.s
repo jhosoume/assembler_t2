@@ -11,10 +11,10 @@ zeroing_loop:
   loop zeroing_loop
 
   sub ecx, ecx
-  mov ebx, 16
   mov eax, INPUT_HEXA
 getting_algs:     ;getting algarisms
-  cdq             ;sign extention
+  sub edx, edx
+  mov ebx, 16
   div ebx        ;eax = result / edx = result
 
   ;cmp the rest with 10
@@ -35,7 +35,7 @@ continue:
 
   ;cmp if number is over
   cmp eax, 0
-  JNE getting_algs
+  jg getting_algs
 
 end_output:
   mov BYTE [esp + ecx], 0x58   ;'x'
