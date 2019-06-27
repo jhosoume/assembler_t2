@@ -47,6 +47,14 @@ do_conversion_loopRH:
   cmp bl, 0x3A  ;if less than
   jl  sub_0x30
 
+  cmp bl, 0x47
+  jl sub_0x37
+
+sub_0x57:
+  sub bl, 0x57
+  jmp continueRH
+
+sub_0x37:
   sub bl, 0x37
   jmp continueRH
 

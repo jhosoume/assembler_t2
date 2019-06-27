@@ -182,7 +182,7 @@ void Translate::exec() {
       nasm_code.push_back("pop eax\n");
 
       // DEALING WITH OUTPUT HEX
-    } else if (tokens.front().tvalue == "H_ OUTPUT") {
+    } else if (tokens.front().tvalue == "H_OUTPUT") {
       nasm_code.push_back("push eax\n");
       aux_string = "push DWORD ";
       aux_string = aux_string + stringfyOps(operands.front(), false) + "\n";

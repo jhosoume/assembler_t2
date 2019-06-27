@@ -39,7 +39,7 @@ continueWH:
   jg getting_algsWH
 
 end_outputWH:
-  mov BYTE [esp + ecx], 0x58   ;'x'
+  mov BYTE [esp + ecx], 0x78   ;'x'
   inc ecx
   mov BYTE [esp + ecx], 0x30   ;'0'
   inc ecx         ;ecx = size | index = size - 1
