@@ -5,8 +5,8 @@
 ;
 ;-----------------------------------------------------
 
-%define STRING_SIZE DWORD [ebp + 8]
-%define STRING_ADDR DWORD [ebp + 12]
+; %define STRING_SIZE DWORD [ebp + 8]
+; %define STRING_ADDR DWORD [ebp + 12]
 
 global WriteString
 

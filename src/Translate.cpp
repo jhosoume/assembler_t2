@@ -33,11 +33,11 @@ void Translate::exec() {
 
     // DEALING WITH SECTION
     if (tokens.front().type == TokenType::SECTION) {
-      nasm_code.push_back("section ");
       if (tokens.back().type == TokenType::DATA_SECTION) {
-        nasm_code.back() = nasm_code.back() + ".data\n";
+        addInputOutput();
+        nasm_code.push_back("section .data\n");
       } else if (tokens.back().type == TokenType::TEXT_SECTION) {
-        nasm_code.back() = nasm_code.back() + ".text\n";
+        nasm_code.push_back("section .text\n");
         nasm_code.push_back("_start: \n");
       }
 
@@ -135,6 +135,7 @@ void Translate::exec() {
       nasm_code.push_back("push eax\n");
       aux_string = "push DWORD ";
       aux_string = aux_string + stringfyOps(operands.front(), false) + "\n";
+      nasm_code.push_back(aux_string);
       nasm_code.push_back("call ReadChar\n");
       nasm_code.push_back("pop edx\n");
       nasm_code.push_back("pop eax\n");
@@ -269,5 +270,26 @@ string Translate::stringfyOps(vector <Token> op, bool std_size) {
 }
 
 void Translate::addInputOutput() {
-
+  vector <string> fileNames = {"IA32_IO/ReadChar.s",
+                               "IA32_IO/WriteChar.s",
+                               "IA32_IO/ReadIntegerAddr.s",
+                               "IA32_IO/WriteIntegerAddr.s",
+                               "IA32_IO/ReadHexa.s",
+                               "IA32_IO/WriteHexa.s",
+                               "IA32_IO/ReadString.s",
+                               "IA32_IO/WriteString.s",
+                             };
+  string line;
+  for (const auto name : fileNames) {
+    std::ifstream ifs(name);
+    // Testing if file can be oppened
+    if (!ifs.is_open()) {
+      throw std::runtime_error("[ERR] " + name + " could not open IA32 input output files!\n This binary should have an IA 32 directory in the src foulder with the asm files for INPUT and OUTPUT");
+    }
+    nasm_code.push_back("\n");
+    while(std::getline(ifs, line)) {
+      nasm_code.push_back(line + "\n");
+    }
+    nasm_code.push_back("\n");
+  }
 }
