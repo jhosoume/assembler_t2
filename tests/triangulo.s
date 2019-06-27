@@ -2,24 +2,24 @@ global _start
  section .text
  _start: 
  push eax
- push DWORD N
+ push DWORD B
  call ReadIntegerAddr
  pop edx
  pop eax
- mov eax, [N]
- FAT:
- sub eax, [ONE]
- cmp eax, 0
- je FIM
- mov [AUX], eax
- mov ebx, [N]
- imul eax, ebx
- mov [N], eax
- mov eax, [AUX]
- jmp FAT
- FIM:
  push eax
- push DWORD N
+ push DWORD H
+ call ReadIntegerAddr
+ pop edx
+ pop eax
+ mov eax, [B]
+ mov ebx, [H]
+ imul eax, ebx
+ mov ebx, [DOIS]
+ cdq
+ idiv ebx
+ mov [R], eax
+ push eax
+ push DWORD R
  call WriteIntegerAddr
  pop edx
  pop eax
@@ -27,10 +27,12 @@ global _start
  mov ebx, 0
  int 80h
  section .data
- AUX:
+ B:
  DD 0
- N:
+ H:
  DD 0
- ONE:
- DD 1
+ R:
+ DD 0
+ DOIS:
+ DD 2
  

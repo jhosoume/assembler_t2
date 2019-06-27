@@ -1,4 +1,4 @@
-%define INPUT_HEXA DWORD [ebp + 8]
+; %define INPUT_HEXA_ADDR DWORD [ebp + 8]
 
 global WriteHexa
 
@@ -6,51 +6,52 @@ WriteHexa:
   enter 11, 0
 
   mov ecx, 11     ;8 digits + 2 '0X' + 1 tamanho
-zeroing_loop:
+zeroing_loopWH:
   mov BYTE [esp + ecx], 0
-  loop zeroing_loop
+  loop zeroing_loopWH
 
   sub ecx, ecx
-  mov eax, INPUT_HEXA
-getting_algs:     ;getting algarisms
+  mov esi, [ebp + 8]
+  mov eax, [esi]
+getting_algsWH:     ;getting algarisms
   sub edx, edx
   mov ebx, 16
   div ebx        ;eax = result / edx = result
 
   ;cmp the rest with 10
   cmp edx, 10
-  JB  sum0x30
+  jb  sum0x30
 
 sum0x41:
   add edx, 0x37
-  JMP continue
+  jmp continueWH
 
 sum0x30:
   add edx, 0x30
 
-continue:
+continueWH:
   mov [esp + ecx], edx
 
   inc ecx         ;inc stack index
 
   ;cmp if number is over
   cmp eax, 0
-  jg getting_algs
+  jg getting_algsWH
 
-end_output:
+end_outputWH:
   mov BYTE [esp + ecx], 0x58   ;'x'
   inc ecx
   mov BYTE [esp + ecx], 0x30   ;'0'
   inc ecx         ;ecx = size | index = size - 1
   mov [esp + 11], ecx
 
-invert_output:
+invert_outputWH:
   dec ECX         ;size is turned into indexes
   ;eax is teh other index
   sub eax, eax
   sub edx, edx
   sub ebx, ebx
-invert_loop:
+invert_loopWH:
   ; swap positions
   mov bl, [esp + eax]   ;2
   mov dl, [esp + ecx]   ;0
@@ -62,7 +63,7 @@ invert_loop:
 
   ;when indexes cross each other, stop
   cmp eax, ecx
-  JB  invert_loop
+  jb  invert_loopWH
 
   mov eax, 4          ;eax = 4 escrever = 3 ler
   mov ebx, 1          ;ebx arquivo a escrever 0 = teclado 1 monitor

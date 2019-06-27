@@ -1,5 +1,5 @@
 section .data
-  write DD 0xFFFE
+  write DD 0xFFFFF
   brk_line DB 0x0D, 0x0A
 
 global main
@@ -9,8 +9,9 @@ extern ReadHexa
 extern WriteHexa
 
 main:
+  push DWORD write
   call ReadHexa     ;answer in EAX
-  push eax
+  ; push eax
   call WriteHexa
   pop eax
 

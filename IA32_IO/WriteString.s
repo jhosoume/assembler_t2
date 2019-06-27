@@ -16,10 +16,10 @@ WriteString:
     ; write string
     mov eax, 4
     mov ebx, 1
-    mov ecx, STRING_ADDR
-    mov edx, STRING_SIZE
+    mov ecx, [ebp + 12]
+    mov edx, [ebp + 8]
     int 80h
 
-  break:
+  breakWS:
     leave
     ret

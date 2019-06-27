@@ -5,8 +5,8 @@
 ;
 ;-----------------------------------------------------
 
-%define STRING_SIZE DWORD [ebp + 8]
-%define STRING_ADDR DWORD [ebp + 12]
+; %define STRING_SIZE DWORD [ebp + 8]
+; %define STRING_ADDR DWORD [ebp + 12]
 
 global ReadString
 
@@ -16,10 +16,10 @@ ReadString:
     ; get string
     mov eax, 3
     mov ebx, 0
-    mov ecx, STRING_ADDR
-    mov edx, STRING_SIZE
+    mov ecx, [ebp + 12]
+    mov edx, [ebp + 8]
     int 80h
 
-  break:
+  breakRS:
     leave
     ret

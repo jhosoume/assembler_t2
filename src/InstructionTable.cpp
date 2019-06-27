@@ -170,6 +170,92 @@ InstructionTable::InstructionTable() {
   instructions.at("OUTPUT").signatures.push_back(signature);
   signature.clear();
 
+  // C_INPUT _________________________________________________________
+  instructions.insert( pair<string, Instruction>( "C_INPUT", Instruction("C_INPUT", 1, 15) ) );
+  signature.push_back(TokenType::INSTRUCTION_TOKEN);
+  signature.push_back(TokenType::SYMBOL);
+  instructions.at("C_INPUT").signatures.push_back(signature);
+  signature.clear();
+  signature.push_back(TokenType::INSTRUCTION_TOKEN);
+  signature.push_back(TokenType::SYMBOL);
+  signature.push_back(TokenType::ADD_SYMBOL);
+  signature.push_back(TokenType::NUMBER_DECIMAL);
+  instructions.at("C_INPUT").signatures.push_back(signature);
+  signature.clear();
+
+  // C_OUTPUT _________________________________________________________
+  instructions.insert( pair<string, Instruction>( "C_OUTPUT", Instruction("C_OUTPUT", 1, 16) ) );
+  signature.push_back(TokenType::INSTRUCTION_TOKEN);
+  signature.push_back(TokenType::SYMBOL);
+  instructions.at("C_OUTPUT").signatures.push_back(signature);
+  signature.clear();
+  signature.push_back(TokenType::INSTRUCTION_TOKEN);
+  signature.push_back(TokenType::SYMBOL);
+  signature.push_back(TokenType::ADD_SYMBOL);
+  signature.push_back(TokenType::NUMBER_DECIMAL);
+  instructions.at("C_OUTPUT").signatures.push_back(signature);
+  signature.clear();
+
+  // H_INPUT _________________________________________________________
+  instructions.insert( pair<string, Instruction>( "H_INPUT", Instruction("H_INPUT", 1, 17) ) );
+  signature.push_back(TokenType::INSTRUCTION_TOKEN);
+  signature.push_back(TokenType::SYMBOL);
+  instructions.at("H_INPUT").signatures.push_back(signature);
+  signature.clear();
+  signature.push_back(TokenType::INSTRUCTION_TOKEN);
+  signature.push_back(TokenType::SYMBOL);
+  signature.push_back(TokenType::ADD_SYMBOL);
+  signature.push_back(TokenType::NUMBER_DECIMAL);
+  instructions.at("H_INPUT").signatures.push_back(signature);
+  signature.clear();
+
+  // H_OUTPUT _________________________________________________________
+  instructions.insert( pair<string, Instruction>( "H_OUTPUT", Instruction("H_OUTPUT", 1, 18) ) );
+  signature.push_back(TokenType::INSTRUCTION_TOKEN);
+  signature.push_back(TokenType::SYMBOL);
+  instructions.at("H_OUTPUT").signatures.push_back(signature);
+  signature.clear();
+  signature.push_back(TokenType::INSTRUCTION_TOKEN);
+  signature.push_back(TokenType::SYMBOL);
+  signature.push_back(TokenType::ADD_SYMBOL);
+  signature.push_back(TokenType::NUMBER_DECIMAL);
+  instructions.at("H_OUTPUT").signatures.push_back(signature);
+  signature.clear();
+
+  // S_INPUT _________________________________________________________
+  instructions.insert( pair<string, Instruction>( "S_INPUT", Instruction("S_INPUT", 2, 19) ) );
+  signature.push_back(TokenType::INSTRUCTION_TOKEN);
+  signature.push_back(TokenType::SYMBOL);
+  signature.push_back(TokenType::COMMA_ARG_SEPARATOR);
+  signature.push_back(TokenType::NUMBER_DECIMAL);
+  instructions.at("S_INPUT").signatures.push_back(signature);
+  signature.clear();
+  signature.push_back(TokenType::INSTRUCTION_TOKEN);
+  signature.push_back(TokenType::SYMBOL);
+  signature.push_back(TokenType::ADD_SYMBOL);
+  signature.push_back(TokenType::NUMBER_DECIMAL);
+  signature.push_back(TokenType::COMMA_ARG_SEPARATOR);
+  signature.push_back(TokenType::NUMBER_DECIMAL);
+  instructions.at("S_INPUT").signatures.push_back(signature);
+  signature.clear();
+
+  // S_OUTPUT _________________________________________________________
+  instructions.insert( pair<string, Instruction>( "S_OUTPUT", Instruction("S_OUTPUT", 2, 20) ) );
+  signature.push_back(TokenType::INSTRUCTION_TOKEN);
+  signature.push_back(TokenType::SYMBOL);
+  signature.push_back(TokenType::COMMA_ARG_SEPARATOR);
+  signature.push_back(TokenType::NUMBER_DECIMAL);
+  instructions.at("S_OUTPUT").signatures.push_back(signature);
+  signature.clear();
+  signature.push_back(TokenType::INSTRUCTION_TOKEN);
+  signature.push_back(TokenType::SYMBOL);
+  signature.push_back(TokenType::ADD_SYMBOL);
+  signature.push_back(TokenType::NUMBER_DECIMAL);
+  signature.push_back(TokenType::COMMA_ARG_SEPARATOR);
+  signature.push_back(TokenType::NUMBER_DECIMAL);
+  instructions.at("S_OUTPUT").signatures.push_back(signature);
+  signature.clear();
+
   // STOP  _________________________________________________________
   instructions.insert( pair<string, Instruction>( "STOP", Instruction("STOP", 0, 14) ) );
   signature.push_back(TokenType::INSTRUCTION_TOKEN);

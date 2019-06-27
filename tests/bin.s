@@ -1,5 +1,12 @@
 extern WriteIntegerAddr
 extern ReadIntegerAddr
+extern WriteHexa
+extern ReadHexa
+extern WriteString
+extern ReadString
+extern WriteChar
+extern ReadChar
+
 
 global main
  section .text

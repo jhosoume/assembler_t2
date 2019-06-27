@@ -5,8 +5,8 @@
 ;
 ;-----------------------------------------------------
 
-%define INPUT_SIZE DWORD [esp + 11]
-%define INPUT_ADDR DWORD [ebp + 8]
+; %define INPUT_SIZE DWORD [esp + 11]
+; %define INPUT_ADDR DWORD [ebp + 8]
 
 global ReadIntegerAddr
 
@@ -17,9 +17,9 @@ ReadIntegerAddr:
 
     ; zero stack positions
     mov ecx, 12
-  zeroing_loop:
+  zeroing_loopRI:
     mov BYTE [esp + ecx], 0
-    loop zeroing_loop
+    loop zeroing_loopRI
 
     ; zero flag
     mov edi, 0
@@ -32,47 +32,47 @@ ReadIntegerAddr:
     int 80h
 
     ; save numbers read
-    mov INPUT_SIZE, eax
+    mov [esp + 11], eax
 
     ; check if last is a new line
-  check_last_new_line:
+  check_last_new_lineRI:
     ; get pointer to the last character read
     mov esi, esp
-    add esi, INPUT_SIZE
+    add esi, [esp + 11]
     dec esi
 
     ; make comparision to new line ascii
     cmp BYTE [esi], 0xA
     ; jump to next comparision if it isnt a new line
-    jne check_minus_symbol
+    jne check_minus_symbolRI
 
-  deal_new_line:
+  deal_new_lineRI:
     ; remove new line
-    dec BYTE INPUT_SIZE
+    dec BYTE [esp + 11]
 
-  check_minus_symbol:
+  check_minus_symbolRI:
     ; check if first byte is a minus sign
     cmp BYTE [esp], 0x2D
-    jne deal_positive_sign
+    jne deal_positive_signRI
 
     ; if it has a minus sign, set flag
     mov edi, 1
 
-  deal_negative_sign:
+  deal_negative_signRI:
     mov ecx, 1
-    jmp do_conversion
+    jmp do_conversionRI
 
-  deal_positive_sign:
+  deal_positive_signRI:
     mov ecx, 0
-    jmp do_conversion
+    jmp do_conversionRI
 
-  do_conversion:
+  do_conversionRI:
     ; zero acumulator
     mov eax, 0
-  do_conversion_loop:
+  do_conversion_loopRI:
     ; check if all characters were dealt with
-    cmp ecx, INPUT_SIZE
-    jge should_neg
+    cmp ecx, [esp + 11]
+    jge should_negRI
 
     ; multiply old value by ten
     mov edx, eax
@@ -90,22 +90,22 @@ ReadIntegerAddr:
 
     ; ++indx
     inc ecx
-    jmp do_conversion_loop
+    jmp do_conversion_loopRI
 
   ; if flag was set, needs to change to negative
-  should_neg:
+  should_negRI:
     cmp edi, 1
-    jne end_conv
+    jne end_convRI
 
   ; if number is negative, convert
-  convert_neg:
+  convert_negRI:
     not eax
     inc eax
 
-  end_conv:
-    mov esi, INPUT_ADDR
+  end_convRI:
+    mov esi, [ebp + 8]
     mov [esi], eax
-    mov eax, INPUT_SIZE
+    mov eax, [esp + 11]
     ; print numbers just to check
     ; mov edi, esp
     ; add edi, 2
@@ -115,8 +115,8 @@ ReadIntegerAddr:
     ; mov edx, 1
     ; int 80h
 
-    ; mov eax, INPUT_SIZE
+    ; mov eax, [esp + 11]
 
-  break:
+  breakRI:
     leave
     ret

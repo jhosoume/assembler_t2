@@ -1,7 +1,4 @@
 
-TRIANGULO: EQU 1 ;isto é uma constante
-QUADRADO: EQU 0
-
 SECTION TEXT
 Input A
 copy a,b

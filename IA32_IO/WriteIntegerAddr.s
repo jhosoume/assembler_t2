@@ -4,7 +4,7 @@
 ; nasm -f elf -o WriteInteger.o WriteInteger.s
 ;-----------------------------------------------------
 
-%define INPUT_ADDR DWORD [ebp + 8]
+; %define INPUT_ADDR DWORD [ebp + 8]
 
 global WriteIntegerAddr
 
@@ -15,34 +15,34 @@ WriteIntegerAddr:
 
     ; zero stack positions
     mov ecx, 12
-  zeroing_loop:
+  zeroing_loopWI:
     mov BYTE [esp + ecx], 0
-    loop zeroing_loop
+    loop zeroing_loopWI
 
     ; zero flag
     mov edi, 0
 
-    mov esi, INPUT_ADDR
+    mov esi, [ebp + 8]
     mov esi, [esi]
-  check_negative:
+  check_negativeWI:
     cmp esi, 0
-    jl deal_negative
+    jl deal_negativeWI
 
-  deal_positive:
-    jmp main_write
+  deal_positiveWI:
+    jmp main_writeWI
 
-  deal_negative:
+  deal_negativeWI:
     ; set flag indicating that number needs the minus
     mov edi, 1
     ; transform negative
     not esi
     inc esi
 
-  main_write:
+  main_writeWI:
     ; Zero Index, ECX = indx
     ; Value = Write
     sub ecx, ecx
-  convert_loop:
+  convert_loopWI:
     ; Gets value divided by ten
     ; Dividend
     mov eax, esi
@@ -64,15 +64,15 @@ WriteIntegerAddr:
     inc ecx
     ; if value != 0 { ends loop }
     cmp esi, 0
-    jne convert_loop
+    jne convert_loopWI
 
     ; add number of algarisms (size) to the last position of the stack
     mov [esp + 12], ecx
 
-  check_minus:
+  check_minusWI:
     ; check if needs minus sign
     cmp edi, 1
-    jne invert_output
+    jne invert_outputWI
     ; get indx of last character
     mov ecx, [esp + 12]
     ; adding the minus sign
@@ -80,7 +80,7 @@ WriteIntegerAddr:
     ; increments the total size
     inc BYTE [esp + 12]
 
-  invert_output:
+  invert_outputWI:
     ; Size is turned into indx, indx = size - 1
     mov ecx, [esp + 12]
     dec ecx
@@ -90,10 +90,10 @@ WriteIntegerAddr:
     ; dl and bl are used to make swap
     sub edx, edx
     sub ebx, ebx
-  invert_loop:
+  invert_loopWI:
     ; if the number has size 0, stop
     cmp ecx, 0
-    je end_and_print
+    je end_and_printWI
 
     ; swaping positions
     mov bl, [esp + eax]
@@ -107,9 +107,9 @@ WriteIntegerAddr:
 
     ; when indexes cross each other, stop
     cmp eax, ecx
-    jl invert_loop
+    jl invert_loopWI
 
-  end_and_print:
+  end_and_printWI:
     ; write result in the screen
     mov eax, 4
     mov ebx, 1
@@ -117,6 +117,6 @@ WriteIntegerAddr:
     mov edx, 12
     int 80h
 
-  break:
+  breakWI:
     leave
     ret
