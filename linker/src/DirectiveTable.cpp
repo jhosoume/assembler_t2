@@ -4,6 +4,10 @@ DirectiveTable::DirectiveTable() {
   vector<TokenType> signature;
   // DD _________________________________________________________
   directives.insert( pair<string, Directive>( "DD", Directive("DD", 1000, 4) ) );
+  // DW _________________________________________________________
+  directives.insert( pair<string, Directive>( "DW", Directive("DW", 1000, 4) ) );
+  // DB _________________________________________________________
+  directives.insert( pair<string, Directive>( "DB", Directive("DB", 1000, 4) ) );
 }
 
 // Print all possible signtures of all directives
