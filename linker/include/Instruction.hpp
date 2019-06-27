@@ -22,12 +22,12 @@ public:
   int size;
   // [INSTRUCTION SYMBOL, INSTRUCTION SYMBOL ADD_SYMBOL NUMBER_DECIMAL]
   vector<vector<TokenType>> signatures;*/
-  Instruction(string, int, int);
+  Instruction(string, int, int, int);
 
     string name;
     int num_operands;
     int op_code;
-    int size = num_operands + 1;
+    int size;
     // [INSTRUCTION SYMBOL, INSTRUCTION SYMBOL ADD_SYMBOL NUMBER_DECIMAL]
     vector<vector<TokenType>> signatures;
 
