@@ -3,8 +3,11 @@
 FirstPass::FirstPass(const Parser &parser,
                      const Program &prog,
                      const InstructionTable &inst_table,
-                     const DirectiveTable &dir_table)
-  : parser{parser}, program{prog}, instruction_table{inst_table}, directive_table{dir_table}
+                     const DirectiveTable &dir_table,
+                     const RegisterTable &reg_table
+                   )
+  : parser{parser}, program{prog}, instruction_table{inst_table},
+    directive_table{dir_table}, register_table{reg_table}
   {}
 
 SymbolTable FirstPass::exec() {

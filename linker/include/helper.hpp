@@ -34,5 +34,6 @@ bool is_hex_notation(const string &);
 bool is_integer_notation(const string &);
 string TokenTypeToString(const TokenType &);
 string SymbolTypeToString(const SymbolType &);
+int bigToLittle(const int &);
 
 #endif
