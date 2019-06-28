@@ -3,22 +3,109 @@
 InstructionTable::InstructionTable() {
   vector<TokenType> signature;
 
+  // ADD __________________________________________________________
+  instructions.insert(
+    pair<string, Instruction>( "ADD", Instruction("ADD", 2, 6, 0x03) ) );
+
+  // SUB __________________________________________________________
+  instructions.insert(
+    pair<string, Instruction>( "SUB", Instruction("SUB", 2, 6, 0x2B) ) );
+
+  // IMUL _________________________________________________________
+  instructions.insert(
+    pair<string, Instruction>( "IMUL", Instruction("IMUL", 2, 6, 0x0F) ) );
+
+  // MOV __________________________________________________________
+  instructions.insert(
+    pair<string, Instruction>( "MOV", Instruction("MOV", 2, 6, 0xA1) ) );
+
+  // CDQ __________________________________________________________
+  instructions.insert(
+    pair<string, Instruction>( "CDQ", Instruction("CDQ", 0, 6, 0x99) ) );
+
+  // IDIV __________________________________________________________
+  instructions.insert(
+    pair<string, Instruction>( "IDIV", Instruction("IDIV", 1, 6, 0xF7) ) );
+
+  // JMP _________________________________________________________
+  instructions.insert(
+    pair<string, Instruction>( "JMP", Instruction("JMP", 2, 6, 0xEB) ) );
+
+  // CMP _________________________________________________________
+  instructions.insert(
+    pair<string, Instruction>( "CMP", Instruction("CMP", 2, 6, 0x83) ) );
+
+  // JL _________________________________________________________
+  instructions.insert(
+    pair<string, Instruction>( "JL", Instruction("JL", 2, 6, 0x7C) ) );
+
+  // JG _________________________________________________________
+  instructions.insert(
+    pair<string, Instruction>( "JG", Instruction("JG", 2, 6, 0x7F) ) );
+
+  // JE _________________________________________________________
+  instructions.insert(
+    pair<string, Instruction>( "JE", Instruction("JE", 2, 6, 0x74) ) );
+
   // PUSH _________________________________________________________
   instructions.insert(
-    pair<string, Instruction>( "PUSH", Instruction("PUSH", 2, 6, 80) ) );
+    pair<string, Instruction>( "PUSH", Instruction("PUSH", 2, 6, 0x68) ) );
 
-  // POP _________________________________________________________
+  // POP __________________________________________________________
   instructions.insert(
-    pair<string, Instruction>( "POP", Instruction("POP", 2, 6, 80) ) );
+    pair<string, Instruction>( "POP", Instruction("POP", 2, 6, 0x58) ) );
 
   // CALL _________________________________________________________
   instructions.insert(
-    pair<string, Instruction>( "CALL", Instruction("CALL", 1, 6, 232) ) );
+    pair<string, Instruction>( "CALL", Instruction("CALL", 1, 6, 0xE8) ) );
 
-  // MOV _________________________________________________________
+  // INT _________________________________________________________
   instructions.insert(
-    pair<string, Instruction>( "MOV", Instruction("MOV", 2, 6, 163) ) );
+    pair<string, Instruction>( "INT", Instruction("INT", 2, 6, 0xCD) ) );
 
+  // ENTER _________________________________________________________
+  instructions.insert(
+    pair<string, Instruction>( "ENTER", Instruction("ENTER", 2, 6, 0xC8) ) );
+
+  // LEAVE _________________________________________________________
+  instructions.insert(
+    pair<string, Instruction>( "LEAVE", Instruction("LEAVE", 2, 6, 0xC9) ) );
+
+  // RET _________________________________________________________
+  instructions.insert(
+    pair<string, Instruction>( "RET", Instruction("RET", 2, 6, 0xC3) ) );
+
+  // LOOP _________________________________________________________
+  instructions.insert(
+    pair<string, Instruction>( "LOOP", Instruction("LOOP", 2, 6, 0xE2) ) );
+
+  // DEC _________________________________________________________
+  instructions.insert(
+    pair<string, Instruction>( "DEC", Instruction("DEC", 2, 6, 0x4E) ) );
+
+  // JNE _________________________________________________________
+  instructions.insert(
+    pair<string, Instruction>( "JNE", Instruction("JNE", 2, 6, 0x75) ) );
+
+  // JGE _________________________________________________________
+  instructions.insert(
+    pair<string, Instruction>( "JGE", Instruction("JGE", 2, 6, 0x7D) ) );
+
+  // SHL _________________________________________________________
+  instructions.insert(
+    pair<string, Instruction>( "SHL", Instruction("SHL", 2, 6, 0xC1) ) );
+
+  // INC _________________________________________________________
+  instructions.insert(
+    pair<string, Instruction>( "INC", Instruction("INC", 2, 6, 0x40) ) );
+
+  // NOT _________________________________________________________
+  instructions.insert(
+    pair<string, Instruction>( "NOT", Instruction("NOT", 2, 6, 0xF7) ) );
+
+  // JB _________________________________________________________
+  instructions.insert(
+    pair<string, Instruction>( "JB", Instruction("JB", 2, 6, 0x72) ) );
 }
 
 
