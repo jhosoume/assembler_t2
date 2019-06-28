@@ -1,7 +1,7 @@
 #include "Scanner.hpp"
 
-Scanner::Scanner(InstructionTable instructions, DirectiveTable directives)
-  : instruction_table{instructions}, directive_table{directives}
+Scanner::Scanner(InstructionTable instructions, DirectiveTable directives, RegisterTable registers)
+  : instruction_table{instructions}, directive_table{directives}, register_table{registers}
 {
   const string tmp_letters = "ABCDEFGHIJKLMNOPQRSTUVXWYZ";
   const string tmp_numbers = "0123456789";
@@ -67,6 +67,10 @@ TokenType Scanner::classifyToken(string token) {
       return TokenType::TEXT_SECTION;
   } else if (token.compare("MACRO") == 0) {
       return TokenType::MACRO;
+  } else if (token.compare("]") == 0) {
+      return TokenType::CLOSE_BRACKET;
+  } else if (token.compare("[") == 0) {
+      return TokenType::OPEN_BRACKET;
   } else if ( (token.compare("END") == 0) || (token.compare("ENDMACRO") == 0) ) {
       return TokenType::ENDMACRO;
   } else if (token.compare(",") == 0) {
@@ -77,10 +81,14 @@ TokenType Scanner::classifyToken(string token) {
       return TokenType::INSTRUCTION_TOKEN;
   } else if (directive_table.directives.count(token) > 0) {
       return TokenType::DIRECTIVE_TOKEN;
+  } else if (register_table.registers.count(token) > 0) {
+      return TokenType::REGISTER_TOKEN;
   } else if(checkIfDecNumber(token)) {
       return TokenType::NUMBER_DECIMAL;
   } else if(checkIfHexNumber(token)) {
       return TokenType::NUMBER_HEX;
+  } else if(token.compare("80H") == 0) {
+      return TokenType::END_HEX;
   } else if (!isTokenValid(token)) {
       return TokenType::INVALID;
   }

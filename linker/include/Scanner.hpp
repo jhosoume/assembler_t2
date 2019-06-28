@@ -12,6 +12,7 @@
 #include "Token.hpp"
 #include "InstructionTable.hpp"
 #include "DirectiveTable.hpp"
+#include "RegisterTable.hpp"
 
 using ::std::string;
 using ::std::vector;
@@ -19,7 +20,7 @@ using ::std::set;
 
 class Scanner {
 public:
-  Scanner(InstructionTable, DirectiveTable);
+  Scanner(InstructionTable, DirectiveTable, RegisterTable);
   // Split into Different tokens
   vector<Token> splitIntoTokens(string);
   // Classify each token
@@ -35,6 +36,7 @@ private:
 
   InstructionTable instruction_table;
   DirectiveTable directive_table;
+  RegisterTable register_table;
 
   set<char> validCharacters;
   set<char> validFirstCharacters;

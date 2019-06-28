@@ -8,6 +8,8 @@ PreProcessor::PreProcessor(const Scanner &scanner, const Parser &parser, Program
     validSpecialCharacters.insert('+');
     validSpecialCharacters.insert(':');
     validSpecialCharacters.insert(',');
+    validSpecialCharacters.insert(']');
+    validSpecialCharacters.insert('[');
   }
 
 void PreProcessor::exec() {

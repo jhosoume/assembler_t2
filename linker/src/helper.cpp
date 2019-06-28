@@ -123,6 +123,9 @@ string TokenTypeToString(const TokenType &type) {
     case TokenType::INSTRUCTION_TOKEN :
       return "INSTRUCTION";
       break;
+    case TokenType::REGISTER_TOKEN :
+      return "REGISTER";
+      break;
     case TokenType::COMMENT_SEMICOLON:
       return "COMMENT_SEMICOLON";
       break;
@@ -146,6 +149,15 @@ string TokenTypeToString(const TokenType &type) {
       break;
     case TokenType::ADD_SYMBOL:
       return "ADD_SYMBOL";
+      break;
+    case TokenType::OPEN_BRACKET:
+      return "OPEN_BRACKET";
+      break;
+    case TokenType::CLOSE_BRACKET:
+      return "CLOSE_BRACKET";
+      break;
+    case TokenType::END_HEX:
+      return "END_HEX";
       break;
     default:
       return "UNKNOWN_TYPE";

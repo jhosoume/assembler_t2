@@ -15,10 +15,14 @@ enum class TokenType {
   TEXT_SECTION,              // Macro definition
   DIRECTIVE_TOKEN,
   INSTRUCTION_TOKEN,
+  REGISTER_TOKEN,
   COMMENT_SEMICOLON,
   COMMA_ARG_SEPARATOR,
   MACRO_PARAMETER,
   ADD_SYMBOL,         // + sign, utilized for vectors
+  OPEN_BRACKET,
+  CLOSE_BRACKET,
+  END_HEX,
   EMPTY               // spaces or empty lines
 };
 
