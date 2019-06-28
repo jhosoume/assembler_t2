@@ -1,6 +1,7 @@
 global _start
  section .text
  _start: 
+ add eax, [OLD_DATA]
  push eax
  push DWORD OLD_DATA
  call ReadIntegerAddr
