@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
   zero_run.writePreProcessedFile();
   FirstPass first_pass = FirstPass(parser, prog, instruction_table,
                                    directive_table, register_table);
-  // SymbolTable symbol_table = first_pass.exec();
+  SymbolTable symbol_table = first_pass.exec();
   // cout << "**********************" << endl;
   // cout << "Finish First Pass" << endl;
   // cout << "**********************" << endl << endl;

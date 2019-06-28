@@ -18,33 +18,17 @@ SymbolTable FirstPass::exec() {
     int value = 0;
     int vec_size = 0;
     SymbolType s_type = SymbolType::INSTRUCTION;
+    cout << line << " ";
     if ( parser.hasLabel(program.tokens.at(line)) ) {
-      main_token = parser.getInstructionOrDirective(program.tokens.at(line));
-      if (main_token.tvalue == "CONST") {
-        s_type = SymbolType::CONST;
-        if (program.tokens.at(line).back().type == TokenType::NUMBER_DECIMAL) {
-          value = std::stoi(program.tokens.at(line).back().tvalue);
-        } else if (program.tokens.at(line).back().type == TokenType::NUMBER_HEX) {
-          value = std::stoi(program.tokens.at(line).back().tvalue, nullptr, 16);
-        }
-      } else if (main_token.tvalue == "SPACE") {
-        s_type = SymbolType::SPACE;
-        if (program.tokens.at(line).back().type == TokenType::NUMBER_DECIMAL) {
-          vec_size = std::stoi(program.tokens.at(line).back().tvalue);
-        } else if (program.tokens.at(line).back().type == TokenType::NUMBER_HEX) {
-          vec_size = std::stoi(program.tokens.at(line).back().tvalue, nullptr, 16);
-        }
-      } else if (instruction_table.isInstruction(program.tokens.at(line).front().tvalue)) {
-        cout << "[SEMANTIC ERR] Line: " << line + 1 << " | Label redefining a instruction!" << endl;
+      cout << "FOUND LABEL! " << program.tokens.at(line).front().tvalue << " | ";
 
-      } else if (directive_table.isDirective(program.tokens.at(line).front().tvalue)) {
-        cout << "[SEMANTIC ERR] Line: " << line + 1 << " | Label redefining a directive!" << endl;
-      }
+      main_token = parser.getInstructionOrDirective(program.tokens.at(line));
       symbol_table.addSymbol(line, program.tokens.at(line).front().tvalue, program_counter, s_type, value, vec_size);
     }
-    program_counter += parser.calculateSizeOfExpression(program.tokens.at(line), line);
+    program_counter += 6;
+    cout << endl;
   }
-  // symbol_table.listTable();
+  symbol_table.listTable();
   program.total_size = program_counter;
   return symbol_table;
 }
