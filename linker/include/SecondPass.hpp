@@ -10,6 +10,9 @@
 #include "Program.hpp"
 #include "SymbolData.hpp"
 #include "SymbolTable.hpp"
+#include "RegisterTable.hpp"
+#include "InstructionTable.hpp"
+#include "SymbolTable.hpp"
 #include "Token.hpp"
 
 using ::std::string;
@@ -23,7 +26,8 @@ public:
              const Program &,
              const SymbolTable &,
              const InstructionTable &,
-             const DirectiveTable &
+             const DirectiveTable &,
+             const RegisterTable &
            );
   void exec();
   void writeObjectFile();
@@ -36,6 +40,7 @@ private:
   SymbolTable symbol_table;
   InstructionTable instruction_table;
   DirectiveTable directive_table;
+  RegisterTable register_table;
   vector<int> exec_code;
 
 };

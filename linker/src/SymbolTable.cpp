@@ -52,7 +52,8 @@ void SymbolTable::listTable() {
   cout << "Listing Symbol Table" << endl;
   cout << "LABEL: Address" << endl;
   for (const auto &pair_symbol : definitions) {
-    cout << pair_symbol.first << ": " << pair_symbol.second.address << " "
+    cout << pair_symbol.first << ": ";
+    cout << std::hex << pair_symbol.second.address << " "
       << SymbolTypeToString(pair_symbol.second.symbol_type) << " " << pair_symbol.second.value
       << " "<< pair_symbol.second.offset << endl;
   }

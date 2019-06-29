@@ -29,7 +29,7 @@ InstructionTable::InstructionTable() {
 
   // JMP _________________________________________________________
   instructions.insert(
-    pair<string, Instruction>( "JMP", Instruction("JMP", 2, 6, 0xEB) ) );
+    pair<string, Instruction>( "JMP", Instruction("JMP", 1, 6, 0xEB) ) );
 
   // CMP _________________________________________________________
   instructions.insert(
@@ -37,15 +37,15 @@ InstructionTable::InstructionTable() {
 
   // JL _________________________________________________________
   instructions.insert(
-    pair<string, Instruction>( "JL", Instruction("JL", 2, 6, 0x7C) ) );
+    pair<string, Instruction>( "JL", Instruction("JL", 1, 6, 0x7C) ) );
 
   // JG _________________________________________________________
   instructions.insert(
-    pair<string, Instruction>( "JG", Instruction("JG", 2, 6, 0x7F) ) );
+    pair<string, Instruction>( "JG", Instruction("JG", 1, 6, 0x7F) ) );
 
   // JE _________________________________________________________
   instructions.insert(
-    pair<string, Instruction>( "JE", Instruction("JE", 2, 6, 0x74) ) );
+    pair<string, Instruction>( "JE", Instruction("JE", 1, 6, 0x74) ) );
 
   // PUSH _________________________________________________________
   instructions.insert(
@@ -61,7 +61,7 @@ InstructionTable::InstructionTable() {
 
   // INT _________________________________________________________
   instructions.insert(
-    pair<string, Instruction>( "INT", Instruction("INT", 2, 6, 0xCD) ) );
+    pair<string, Instruction>( "INT", Instruction("INT", 1, 6, 0xCD) ) );
 
   // ENTER _________________________________________________________
   instructions.insert(
@@ -69,15 +69,15 @@ InstructionTable::InstructionTable() {
 
   // LEAVE _________________________________________________________
   instructions.insert(
-    pair<string, Instruction>( "LEAVE", Instruction("LEAVE", 2, 6, 0xC9) ) );
+    pair<string, Instruction>( "LEAVE", Instruction("LEAVE", 0, 6, 0xC9) ) );
 
   // RET _________________________________________________________
   instructions.insert(
-    pair<string, Instruction>( "RET", Instruction("RET", 2, 6, 0xC3) ) );
+    pair<string, Instruction>( "RET", Instruction("RET", 1, 6, 0xC3) ) );
 
   // LOOP _________________________________________________________
   instructions.insert(
-    pair<string, Instruction>( "LOOP", Instruction("LOOP", 2, 6, 0xE2) ) );
+    pair<string, Instruction>( "LOOP", Instruction("LOOP", 1, 6, 0xE2) ) );
 
   // DEC _________________________________________________________
   instructions.insert(
@@ -85,11 +85,11 @@ InstructionTable::InstructionTable() {
 
   // JNE _________________________________________________________
   instructions.insert(
-    pair<string, Instruction>( "JNE", Instruction("JNE", 2, 6, 0x75) ) );
+    pair<string, Instruction>( "JNE", Instruction("JNE", 1, 6, 0x75) ) );
 
   // JGE _________________________________________________________
   instructions.insert(
-    pair<string, Instruction>( "JGE", Instruction("JGE", 2, 6, 0x7D) ) );
+    pair<string, Instruction>( "JGE", Instruction("JGE", 1, 6, 0x7D) ) );
 
   // SHL _________________________________________________________
   instructions.insert(
@@ -99,13 +99,21 @@ InstructionTable::InstructionTable() {
   instructions.insert(
     pair<string, Instruction>( "INC", Instruction("INC", 2, 6, 0x40) ) );
 
+  // DEC _________________________________________________________
+  instructions.insert(
+    pair<string, Instruction>( "DEC", Instruction("DEC", 2, 6, 0x40) ) );
+
   // NOT _________________________________________________________
   instructions.insert(
     pair<string, Instruction>( "NOT", Instruction("NOT", 2, 6, 0xF7) ) );
 
   // JB _________________________________________________________
   instructions.insert(
-    pair<string, Instruction>( "JB", Instruction("JB", 2, 6, 0x72) ) );
+    pair<string, Instruction>( "JB", Instruction("JB", 1, 6, 0x72) ) );
+
+  // NOP _________________________________________________________
+  instructions.insert(
+    pair<string, Instruction>( "NOP", Instruction("NOP", 0, 0, 0x72) ) );
 }
 
 

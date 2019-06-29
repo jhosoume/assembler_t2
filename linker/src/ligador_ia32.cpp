@@ -29,7 +29,8 @@ int main(int argc, char **argv) {
   // //                                     prog,
   // //                                     symbol_table,
   // //                                     instruction_table,
-  // //                                     directive_table);
+  // //                                     directive_table,
+                                            // register_table);
   // // // prog.showTokens();
   // // second_pass.exec();
   // // second_pass.writeObjectFile();

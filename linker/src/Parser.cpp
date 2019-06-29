@@ -123,26 +123,14 @@ int Parser::calculateSizeOfExpression(const vector<Token> &tokens, int line) {
   // All instructions have a defined size
   if (dir_inst_token.type == TokenType::INSTRUCTION_TOKEN) {
     return instruction_table.get(dir_inst_token).size;
-  // Some directives have a variable size
+    // Some directives have a variable size
   } else if (dir_inst_token.type == TokenType::DIRECTIVE_TOKEN) {
     size = directive_table.get(dir_inst_token).size;
     // If the directive is a space, it depends on the allocated size
-    if (dir_inst_token.tvalue == "SPACE") {
-        if (tokens.back().type == TokenType::NUMBER_DECIMAL)
-          return std::stoi(tokens.back().tvalue);
-        else if (tokens.back().type == TokenType::NUMBER_HEX)
-          return std::stoi(tokens.back().tvalue, nullptr, 16);
-        else
-          return 1;
-    }
     return size;
   } else if (dir_inst_token.type == TokenType::SECTION) {
     return 0;
-  } else if (directive_table.isPreProcessDirective(dir_inst_token)) {
-    cout << "[SYNTAX ERR | Line " << line + 1 << "] Pre processement directive was not dealt correctly!" << endl;
-    return 0;
   } else {
-    cout << "[SINTATIC ERR | Line " << line + 1 << "] Line does not have a directive or an instruction!" << endl;
     return 0;
   }
 }
