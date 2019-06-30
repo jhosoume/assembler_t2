@@ -5,6 +5,7 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include <elfio/elfio.hpp>
 
 #include "Parser.hpp"
 #include "Program.hpp"
@@ -19,6 +20,8 @@ using ::std::string;
 using ::std::vector;
 using ::std::cout;
 using ::std::endl;
+
+using namespace ELFIO;
 
 class SecondPass {
 public:
@@ -45,9 +48,11 @@ private:
   vector<int> exec_code;
   vector<char> text_code;
   vector<char> data_code;
+  int begin_data = 0x08150020;
   void getBytes(int, char []);
   int bigToLittle(int);
   string stringfyOps(vector <Token>);
+  void createExec();
 };
 
 
