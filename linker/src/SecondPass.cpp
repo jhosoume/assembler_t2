@@ -1,5 +1,20 @@
 #include "SecondPass.hpp"
 
+struct HexCharStruct {
+  unsigned char c;
+  HexCharStruct(unsigned char _c) : c(_c) { }
+};
+
+inline std::ostream& operator<<(std::ostream& o,
+                                const HexCharStruct& hs) {
+  return (o << std::hex << (int)hs.c);
+}
+
+inline HexCharStruct hex(unsigned char _c) {
+  return HexCharStruct(_c);
+}
+
+
 SecondPass::SecondPass(const Parser &parser,
                        const Program &prog,
                        const SymbolTable &sbt,
@@ -13,8 +28,16 @@ SecondPass::SecondPass(const Parser &parser,
 
 void SecondPass::exec() {
   // Open file for writing the object file
+  // CONSTANTS  --- REMEBER TO DEFINE THEM LATER --- :
+  int BEGIN_DATA = 0x08050020;
+
+
   vector<Token> tokens;
   vector < vector<Token> > operands;
+  bool text_section = true;
+  bool data_section = false;
+  int location;
+  char bytes[4];
   for (unsigned int line = 0; line < program.tokens.size(); ++line) {
     // cout << line << " ";
     tokens = program.tokens.at(line);
@@ -23,108 +46,42 @@ void SecondPass::exec() {
       // If has label, put iterator after label
       tokens.assign(tokens.begin() + 2, tokens.end());
     }
-    parser.checkDerivation(tokens, line);
-    if (tokens.front().type == TokenType::INSTRUCTION_TOKEN) {
-      // If instruction, needs to add opcode then deal with operands
-      exec_code.push_back(instruction_table.get(tokens.at(0)).op_code);
-      // cout << exec_code.back() << " ";
+    if (text_section) {
+      if (program.tokens.at(line).front().tvalue == "READCHAR") {
+        text_section = false;
+        continue;
+      }
       operands = parser.groupOps(program.tokens.at(line));
-      if (operands.size() > 0) {
-        for (const auto &operand : operands) {
-          exec_code.push_back(getAddrValueFromOperand(operand, line));
-          // cout << exec_code.back() << " ";
-        }
+      cout << "OPERANDS: ";
+      for (auto op : operands) {
+        cout << stringfyOps(op);
+        cout <<  " | ";
       }
-      if ((tokens.front().tvalue == "JMP") ||
-          (tokens.front().tvalue == "JMPN") ||
-          (tokens.front().tvalue == "JMPP") ||
-          (tokens.front().tvalue == "JMPZ")
-         ) {
-        // TODO Make a try excepetion in case not found in table
-        try {
-          SymbolData data = symbol_table.getSymbolData(tokens.back().tvalue);
-          if (data.symbol_type != SymbolType::INSTRUCTION) {
-            cout << "[SEMANTIC ERR] Line: " << line + 1 << " | Jump to invalid location!" << endl;
+      cout << endl;
+      if (tokens.front().type == TokenType::INSTRUCTION_TOKEN) {
+        if (tokens.front().tvalue == "ADD") {
+          text_code.push_back('\x03');
+          text_code.push_back('\x05');
+          location = getAddrValueFromOperand(operands.back(), line);
+          getBytes(bigToLittle(location), bytes);
+          for (int indx = 0; indx < 4; ++indx){
+            text_code.push_back(bytes[indx]);
           }
-        } catch(const std::out_of_range &e) {
-          cout << "[SEMANTIC ERR | Line: " << line + 1 << "] Symbol '" << tokens.back().tvalue
-            << "' could not be found in the Symbol Table" << endl;
-        }
-      } else if (tokens.front().type == TokenType::INSTRUCTION_TOKEN) {
-        for (const auto &operand : operands) {
-          try {
-            SymbolData data = symbol_table.getSymbolData(operand.front().tvalue);
-            if (data.symbol_type == SymbolType::INSTRUCTION) {
-              cout << "[SEMANTIC ERR] Line: " << line + 1 << " | Argument is invalid!"
-                << " It should be a label to CONST or SPACE." << endl;
-            }
-          } catch(const std::out_of_range &e) {
-            cout << "[SEMANTIC ERR | Line: " << line + 1 << "] Symbol '" << tokens.back().tvalue
-              << "' could not be found in the Symbol Table" << endl;
+        } else if (tokens.front().tvalue == "SUB") {
+          text_code.push_back('\x2b');
+          text_code.push_back('\x05');
+          location = getAddrValueFromOperand(operands.back(), line);
+          getBytes(bigToLittle(location), bytes);
+          for (int indx = 0; indx < 4; ++indx){
+            text_code.push_back(bytes[indx]);
           }
         }
       }
-      if (tokens.front().tvalue == "DIV") {
-        try {
-          SymbolData data = symbol_table.getSymbolData(operands.front().front().tvalue);
-          if ((data.value == 0) && (data.symbol_type == SymbolType::CONST)){
-            cout << "[SEMANTIC ERR] Line: " << line + 1 << " | Division by zero!" << endl;
-          }
-        } catch(const std::out_of_range &e) {
-          cout << "[SEMANTIC ERR | Line: " << line + 1 << "] Symbol '" << tokens.back().tvalue
-            << "' could not be found in the Symbol Table" << endl;
-        }
-      } else if (tokens.front().tvalue == "COPY") {
-        try {
-          SymbolData data = symbol_table.getSymbolData(operands.back().front().tvalue);
-          if (data.symbol_type == SymbolType::CONST) {
-            cout << "[SEMANTIC ERR] Line: " << line + 1 << " | Modifying const data!" << endl;
-          }
-        } catch(const std::out_of_range &e) {
-          cout << "[SEMANTIC ERR | Line: " << line + 1 << "] Symbol '" << operands.back().front().tvalue
-            << "' could not be found in the Symbol Table" << endl;
-        }
-      } else if (tokens.front().tvalue == "STORE" || tokens.front().tvalue == "INPUT") {
-        try {
-          SymbolData data = symbol_table.getSymbolData(operands.front().front().tvalue);
-          if (data.symbol_type == SymbolType::CONST) {
-            cout << "[SEMANTIC ERR] Line: " << line + 1 << " | Modifying const data!" << endl;
-          }
-        } catch(const std::out_of_range &e) {
-          cout << "[SEMANTIC ERR | Line: " << line + 1 << "] Symbol '" << operands.back().front().tvalue
-            << "' could not be found in the Symbol Table" << endl;
-        }
-      }
-      // Check if has sum in line (Add in parse)
-    } else if (tokens.at(0).tvalue == "CONST") {
-      // If const, only add number to be in memory
-      // TODO needs to deal with hex
-      try {
-        if (tokens.back().type == TokenType::NUMBER_DECIMAL) {
-          exec_code.push_back(std::stoi( tokens.back().tvalue) );
-        } else if (tokens.back().type == TokenType::NUMBER_HEX) {
-          exec_code.push_back( std::stoi(tokens.back().tvalue, nullptr, 16) );
-        } else {
-          cout << "[ERR | Line " << line + 1 << "] Could not convert " << tokens.back().tvalue << endl;
-        }
-      } catch(const std::invalid_argument &e) {
-        cout << "[ERR | Line " << line + 1 << "] Could not convert " << tokens.back().tvalue << endl;
-      }
-      // cout << exec_code.back() << " ";
-    } else if (tokens.at(0).tvalue == "SPACE") {
-      // If space, add zeros to memory
-      if (tokens.back().type == TokenType::NUMBER_DECIMAL) {
-        for (int num_zeros = 0; num_zeros < std::stoi(tokens.back().tvalue); ++num_zeros) {
-          exec_code.push_back(0);
-          // cout << exec_code.back() << " ";
-        }
-      } else {
-        exec_code.push_back(0);
-        // cout << exec_code.back() << " ";
-      }
+    } else if (data_section) {
+
     }
-    // cout << endl;
   }
+  showTextCode();
 }
 
 void SecondPass::writeObjectFile() {
@@ -143,25 +100,31 @@ void SecondPass::showObjectCode() {
     cout << endl;
 }
 
+void SecondPass::showTextCode() {
+    for (const auto code : text_code) {
+      cout << hex(code) << " ";
+    }
+    cout << endl;
+}
+
 int SecondPass::getAddrValueFromOperand(vector <Token> operand, int line) {
   try {
-    int addr = symbol_table.getSymbolAddress(operand.at(0));
-    int addition = 0;
-    int offset = symbol_table.getSymbolOffset(operand.at(0));
-    if (operand.size() > 1) {
-      // TODO move conversion of string to number to the token class
-      // TODO check if hex
-      if (operand.back().type == TokenType::NUMBER_HEX) {
-        addition = std::stoi(operand.back().tvalue, nullptr, 16);
-      } else if (operand.back().type == TokenType::NUMBER_DECIMAL) {
-        addition = std::stoi(operand.back().tvalue);
-      } else {
-        addition = std::stoi(operand.back().tvalue);
+    vector<Token> operands_no_bracket;
+    for (const auto tk : operand) {
+      if ((tk.type != TokenType::OPEN_BRACKET) &&
+          (tk.type != TokenType::CLOSE_BRACKET)) {
+        operands_no_bracket.push_back(tk);
       }
-
-      if (addition >= offset) {
-        cout << "[SEMANTIC ERR | Line " << line + 1 << "] Array operand (+ " << addition
-          << ") out of bounds (limit: " << offset << ")." << endl;
+    }
+    int addr = symbol_table.getSymbolAddress(operands_no_bracket.at(0));
+    int addition = 0;
+    if (operands_no_bracket.size() > 1) {
+      if (operands_no_bracket.back().type == TokenType::NUMBER_HEX) {
+        addition = std::stoi(operands_no_bracket.back().tvalue, nullptr, 16);
+      } else if (operand.back().type == TokenType::NUMBER_DECIMAL) {
+        addition = std::stoi(operands_no_bracket.back().tvalue);
+      } else {
+        addition = std::stoi(operands_no_bracket.back().tvalue);
       }
     }
     return addr + addition;
@@ -172,4 +135,31 @@ int SecondPass::getAddrValueFromOperand(vector <Token> operand, int line) {
     cout << "[ERR | Line " << line + 1 << "] Could not convert " << operand.back().tvalue << endl;
     return -1;
   }
+}
+void SecondPass::getBytes(int num, char bytes[]) {
+  int num_byte;
+  bytes[3] = num & 0x000000ff;
+  bytes[2] = (num & 0x0000ff00) >> 8;
+  bytes[1] = (num & 0x00ff0000) >> 16;
+  bytes[0] =  num >> 24;
+}
+
+int SecondPass::bigToLittle(int num) {
+  int swapped;
+  swapped = 	((num>>24)&0xff) | // move byte 3 to byte 0
+                ((num<<8)&0xff0000) | // move byte 1 to byte 2
+                ((num>>8)&0xff00) | // move byte 2 to byte 1
+                ((num<<24)&0xff000000); // byte 0 to byte 3
+  return swapped;
+}
+
+string SecondPass::stringfyOps(vector <Token> op) {
+  string operand = "";
+  if (op.size() > 0) {
+    for (const auto tk : op) {
+      operand = operand + tk.tvalue + " ";
+    }
+    operand.pop_back();
+  }
+  return operand;
 }

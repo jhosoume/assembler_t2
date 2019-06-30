@@ -32,6 +32,7 @@ public:
   void exec();
   void writeObjectFile();
   void showObjectCode();
+  void showTextCode();
   int getAddrValueFromOperand(vector <Token>, int);
 
 private:
@@ -42,7 +43,11 @@ private:
   DirectiveTable directive_table;
   RegisterTable register_table;
   vector<int> exec_code;
-
+  vector<char> text_code;
+  vector<char> data_code;
+  void getBytes(int, char []);
+  int bigToLittle(int);
+  string stringfyOps(vector <Token>);
 };
 
 

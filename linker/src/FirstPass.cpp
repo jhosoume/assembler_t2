@@ -22,15 +22,16 @@ SymbolTable FirstPass::exec() {
   vector <vector <Token> > operands;
   for (unsigned int line = 0; line < program.tokens.size(); ++line) {
     if (text_section) {
+      value = 0;
+      vec_size = 0;
+      s_type = SymbolType::INSTRUCTION;
       if (program.tokens.at(line).front().tvalue == "READCHAR") {
+        symbol_table.addSymbol(line, program.tokens.at(line).front().tvalue, program_counter, s_type, value, vec_size);
         program.text_section = program_counter;
         program_counter = 0;
         text_section = false;
         continue;
       }
-      value = 0;
-      vec_size = 0;
-      s_type = SymbolType::INSTRUCTION;
       if ( parser.hasLabel(program.tokens.at(line)) ) {
         // cout << "FOUND LABEL! " << program.tokens.at(line).front().tvalue << " | ";
         main_token = parser.getInstructionOrDirective(program.tokens.at(line));

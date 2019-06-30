@@ -22,17 +22,17 @@ int main(int argc, char **argv) {
   FirstPass first_pass = FirstPass(parser, prog, instruction_table,
                                    directive_table, register_table);
   SymbolTable symbol_table = first_pass.exec();
-  // cout << "**********************" << endl;
-  // cout << "Finish First Pass" << endl;
-  // cout << "**********************" << endl << endl;
-  // // SecondPass second_pass = SecondPass(parser,
-  // //                                     prog,
-  // //                                     symbol_table,
-  // //                                     instruction_table,
-  // //                                     directive_table,
-                                            // register_table);
+  cout << "**********************" << endl;
+  cout << "Finish First Pass" << endl;
+  cout << "**********************" << endl << endl;
+  SecondPass second_pass = SecondPass(parser,
+                                      prog,
+                                      symbol_table,
+                                      instruction_table,
+                                      directive_table,
+                                      register_table);
   // // // prog.showTokens();
-  // // second_pass.exec();
+  second_pass.exec();
   // // second_pass.writeObjectFile();
   // Translate translator =  Translate(parser,
   //                                   prog);
