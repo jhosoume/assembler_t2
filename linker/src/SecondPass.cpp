@@ -95,7 +95,6 @@ void SecondPass::exec() {
               text_code.push_back('\x00');
               text_code.push_back('\x00');
               text_code.push_back('\x00');
-              text_code.push_back('\x90');
 
             } else {
               text_code.push_back('\xa1');
@@ -104,7 +103,6 @@ void SecondPass::exec() {
               for (int indx = 0; indx < 4; ++indx){
                 text_code.push_back(bytes[indx]);
               }
-              text_code.push_back('\x90');
             }
           } else if (operands.front().front().tvalue == "EBX") {
             if (operands.back().front().tvalue == "0") {
@@ -114,7 +112,6 @@ void SecondPass::exec() {
               text_code.push_back('\x00');
               text_code.push_back('\x00');
               text_code.push_back('\x00');
-              text_code.push_back('\x90');
 
             } else {
               text_code.push_back('\x8b');
@@ -144,7 +141,6 @@ void SecondPass::exec() {
             for (int indx = 0; indx < 4; ++indx){
               text_code.push_back(bytes[indx]);
             }
-            text_code.push_back('\x90');
 
           } else if (operands.back().front().tvalue == "EDX") {
             text_code.push_back('\x89');
@@ -161,36 +157,21 @@ void SecondPass::exec() {
             text_code.push_back('\x0f');
             text_code.push_back('\xaf');
             text_code.push_back('\xc3');
-            text_code.push_back('\x90');
-            text_code.push_back('\x90');
-            text_code.push_back('\x90');
 
         } else if (tokens.front().tvalue == "CDQ") {
             // cltd
             text_code.push_back('\x99');
-            text_code.push_back('\x90');
-            text_code.push_back('\x90');
-            text_code.push_back('\x90');
-            text_code.push_back('\x90');
-            text_code.push_back('\x90');
 
         } else if (tokens.front().tvalue == "IDIV") {
             // idiv eax, ebx
             text_code.push_back('\xf7');
             text_code.push_back('\xfb');
-            text_code.push_back('\x90');
-            text_code.push_back('\x90');
-            text_code.push_back('\x90');
-            text_code.push_back('\x90');
 
         } else if (tokens.front().tvalue == "CMP") {
             // cmp eax, 0
             text_code.push_back('\x83');
             text_code.push_back('\xf8');
             text_code.push_back('\x00');
-            text_code.push_back('\x90');
-            text_code.push_back('\x90');
-            text_code.push_back('\x90');
 
         } else if (tokens.front().tvalue == "JMP") {
             text_code.push_back('\xe9');
@@ -199,7 +180,6 @@ void SecondPass::exec() {
             for (int indx = 0; indx < 4; ++indx){
               text_code.push_back(bytes[indx]);
             }
-            text_code.push_back('\x90');
 
         } else if (tokens.front().tvalue == "JL") {
             text_code.push_back('\x0f');
@@ -231,14 +211,10 @@ void SecondPass::exec() {
         } else if (tokens.front().tvalue == "PUSH") {
           if (operands.front().front().tvalue == "EAX") {
             text_code.push_back('\x50');
-            text_code.push_back('\x90');
-            text_code.push_back('\x90');
-            text_code.push_back('\x90');
-            text_code.push_back('\x90');
-            text_code.push_back('\x90');
 
           } else if (operands.front().front().tvalue == "DWORD") {
-            if (operands.back().front().type == TokenType::SYMBOL) {
+            if ((operands.back().back().type == TokenType::SYMBOL) || (operands.back().size() > 2)) {
+              // cout << "IM SYMBOL! " << operands.back().front().tvalue << endl;
               text_code.push_back('\x68');
               tokens_no_dword.assign(operands.back().begin() + 1, operands.back().end());
               location = getAddrValueFromOperand(tokens_no_dword, line);
@@ -246,50 +222,33 @@ void SecondPass::exec() {
               for (int indx = 0; indx < 4; ++indx){
                 text_code.push_back(bytes[indx]);
               }
-              text_code.push_back('\x90');
+
             } else {
               text_code.push_back('\x6a');
               int value;
 
-              if (operands.back().front().type == TokenType::NUMBER_HEX) {
-                value = std::stoi(operands.back().front().tvalue, nullptr, 16);
-              } else if (operands.back().front().type == TokenType::NUMBER_DECIMAL) {
-                value = std::stoi(operands.back().front().tvalue);
+              if (operands.back().back().type == TokenType::NUMBER_HEX) {
+                value = std::stoi(operands.back().back().tvalue, nullptr, 16);
+              } else if (operands.back().back().type == TokenType::NUMBER_DECIMAL) {
+                value = std::stoi(operands.back().back().tvalue);
               }
               getBytes(bigToLittle(value), bytes);
-              for (int indx = 0; indx < 4; ++indx){
-                text_code.push_back(bytes[indx]);
-              }
-              text_code.push_back('\x90');
+              text_code.push_back(bytes[0]);
 
             }
           }
         } else if (tokens.front().tvalue == "POP") {
           if (operands.front().front().tvalue == "EAX") {
             text_code.push_back('\x58');
-            text_code.push_back('\x90');
-            text_code.push_back('\x90');
-            text_code.push_back('\x90');
-            text_code.push_back('\x90');
-            text_code.push_back('\x90');
 
           } else if (operands.front().front().tvalue == "EDX") {
             text_code.push_back('\x5a');
-            text_code.push_back('\x90');
-            text_code.push_back('\x90');
-            text_code.push_back('\x90');
-            text_code.push_back('\x90');
-            text_code.push_back('\x90');
           }
 
         } else if (tokens.front().tvalue == "INT") {
             // int 80h
             text_code.push_back('\xcd');
             text_code.push_back('\x80');
-            text_code.push_back('\x90');
-            text_code.push_back('\x90');
-            text_code.push_back('\x90');
-            text_code.push_back('\x90');
 
         } else if (tokens.front().tvalue == "CALL") {
           if (operands.back().front().tvalue == "READCHAR") {
@@ -299,7 +258,6 @@ void SecondPass::exec() {
             for (int indx = 0; indx < 4; ++indx){
               text_code.push_back(bytes[indx]);
             }
-            text_code.push_back('\x90');
 
           } else if (operands.back().front().tvalue == "WRITECHAR") {
             text_code.push_back('\xe8');
@@ -308,7 +266,6 @@ void SecondPass::exec() {
             for (int indx = 0; indx < 4; ++indx){
               text_code.push_back(bytes[indx]);
             }
-            text_code.push_back('\x90');
 
           } else if (operands.back().front().tvalue == "READINTEGERADDR") {
             text_code.push_back('\xe8');
@@ -317,7 +274,6 @@ void SecondPass::exec() {
             for (int indx = 0; indx < 4; ++indx){
               text_code.push_back(bytes[indx]);
             }
-            text_code.push_back('\x90');
 
           } else if (operands.back().front().tvalue == "WRITEINTEGERADDR") {
             text_code.push_back('\xe8');
@@ -326,7 +282,6 @@ void SecondPass::exec() {
             for (int indx = 0; indx < 4; ++indx){
               text_code.push_back(bytes[indx]);
             }
-            text_code.push_back('\x90');
 
           } else if (operands.back().front().tvalue == "READHEXA") {
             text_code.push_back('\xe8');
@@ -335,7 +290,6 @@ void SecondPass::exec() {
             for (int indx = 0; indx < 4; ++indx){
               text_code.push_back(bytes[indx]);
             }
-            text_code.push_back('\x90');
 
           } else if (operands.back().front().tvalue == "WRITEHEXA") {
             text_code.push_back('\xe8');
@@ -344,7 +298,6 @@ void SecondPass::exec() {
             for (int indx = 0; indx < 4; ++indx){
               text_code.push_back(bytes[indx]);
             }
-            text_code.push_back('\x90');
 
           } else if (operands.back().front().tvalue == "READSTRING") {
             text_code.push_back('\xe8');
@@ -353,7 +306,6 @@ void SecondPass::exec() {
             for (int indx = 0; indx < 4; ++indx){
               text_code.push_back(bytes[indx]);
             }
-            text_code.push_back('\x90');
 
           } else if (operands.back().front().tvalue == "WRITESTRING") {
             text_code.push_back('\xe8');
@@ -362,7 +314,6 @@ void SecondPass::exec() {
             for (int indx = 0; indx < 4; ++indx){
               text_code.push_back(bytes[indx]);
             }
-            text_code.push_back('\x90');
 
           }
         } // CLOSE CASES
@@ -456,7 +407,7 @@ int SecondPass::getAddrValueFromOperand(vector <Token> operand, int line) {
         addition = std::stoi(operands_no_bracket.back().tvalue);
       }
     }
-    return addr + addition;
+    return addr + addition + begin_data;
   } catch(const std::out_of_range &e) {
     cout << "[SEMANTIC ERR | Line " << line + 1 << "] Operand " << operand.at(0).tvalue << " not found in the Symbols Table." << endl;
     return -1;
@@ -497,14 +448,14 @@ int SecondPass::calculateJump(vector <Token> operand, int pc, int line) {
   int location = getAddrValueFromOperand(operand, line);
   // cout << "JUMP l:" << location << "  pc: " << pc;
   // cout << " r: " << (location - pc) <<  endl;
-  return location - pc;
+  return location - pc - begin_data;
 }
 
 int SecondPass::calculateCall(vector <Token> operand, int pc, int line, int offset) {
   int base_addr = symbol_table.getSymbolAddress("READCHAR");
   // cout << "JUMP l:" << base_addr << "  pc: " << pc;
   // cout << " r: " << offset <<  endl;
-  return (base_addr + offset + 1) - pc;
+  return (base_addr + offset) - pc;
 }
 
 void SecondPass::appendIOCode() {

@@ -37,7 +37,7 @@ SymbolTable FirstPass::exec() {
         main_token = parser.getInstructionOrDirective(program.tokens.at(line));
         symbol_table.addSymbol(line, program.tokens.at(line).front().tvalue, program_counter, s_type, value, vec_size);
       }
-      // if (program.tokens.at(line).front().tvalue == "")
+      cout << "PC: " << std::hex << program_counter << " -> " << program.tokens.at(line).front().tvalue << endl;
       program_counter += parser.calculateSizeOfExpression(program.tokens.at(line), line);
 
     } else if (data_section) {

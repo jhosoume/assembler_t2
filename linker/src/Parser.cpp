@@ -122,7 +122,100 @@ int Parser::calculateSizeOfExpression(const vector<Token> &tokens, int line) {
   Token dir_inst_token = getInstructionOrDirective(tokens, line);
   // All instructions have a defined size
   if (dir_inst_token.type == TokenType::INSTRUCTION_TOKEN) {
-    return instruction_table.get(dir_inst_token).size;
+    vector < vector <Token> > operands = groupOps(tokens);
+      if (dir_inst_token.tvalue == "ADD") {
+        return 6;
+
+      } else if (dir_inst_token.tvalue == "SUB") {
+        return 6;
+
+      } else if (dir_inst_token.tvalue == "MOV") {
+        // MOV THAT THE REGISTER IS THE DESTINATION
+        if (operands.front().front().tvalue == "EAX") {
+          if (operands.back().front().tvalue == "1") {
+            // mov eax, 0
+            return 5;
+
+          } else {
+            return 5;
+          }
+
+        } else if (operands.front().front().tvalue == "EBX") {
+          if (operands.back().front().tvalue == "0") {
+            // mov eax, 0
+            return 5;
+
+          } else {
+            return 6;
+
+          }
+
+        } else if (operands.front().front().tvalue == "EDX") {
+          return 6;
+
+        // MOV THAT THE MEMORY IS THE DESTINATION (REG IN THE LAST OP)
+        } else if (operands.back().front().tvalue == "EAX") {
+          return 5;
+
+        } else if (operands.back().front().tvalue == "EDX") {
+          return 6;
+
+        }
+      } else if (dir_inst_token.tvalue == "IMUL") {
+          // imul eax, ebx
+          return 3;
+
+      } else if (dir_inst_token.tvalue == "CDQ") {
+          // cltd
+          return 1;
+
+      } else if (dir_inst_token.tvalue == "IDIV") {
+          // idiv eax, ebx
+          return 2;
+
+      } else if (dir_inst_token.tvalue == "CMP") {
+          // cmp eax, 0
+          return 3;
+
+      } else if (dir_inst_token.tvalue == "JMP") {
+        return 5;
+
+      } else if (dir_inst_token.tvalue == "JL") {
+        return 6;
+
+      } else if (dir_inst_token.tvalue == "JG") {
+        return 6;
+
+      } else if (dir_inst_token.tvalue == "JE") {
+        return 6;
+
+      } else if (dir_inst_token.tvalue == "PUSH") {
+        if (operands.front().front().tvalue == "EAX") {
+          return 1;
+
+        } else if (operands.front().front().tvalue == "DWORD") {
+          if (operands.back().back().type == TokenType::SYMBOL || (operands.back().size() > 2)) {
+            return 5;
+          } else {
+            return 2;
+          }
+        }
+      } else if (dir_inst_token.tvalue == "POP") {
+        if (operands.front().front().tvalue == "EAX") {
+          return 1;
+
+        } else if (operands.front().front().tvalue == "EDX") {
+          return 1;
+        }
+
+      } else if (dir_inst_token.tvalue == "INT") {
+          // int 80h
+          return 2;
+
+      } else if (dir_inst_token.tvalue == "CALL") {
+        return 5;
+
+      } // CLOSE CASES
     // Some directives have a variable size
   } else if (dir_inst_token.type == TokenType::DIRECTIVE_TOKEN) {
     size = directive_table.get(dir_inst_token).size;
