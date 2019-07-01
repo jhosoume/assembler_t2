@@ -36,6 +36,7 @@ public:
   void writeObjectFile();
   void showObjectCode();
   void showTextCode();
+  void showDataCode();
   int getAddrValueFromOperand(vector <Token>, int);
 
 private:
@@ -61,7 +62,7 @@ private:
   int bigToLittle(int);
   string stringfyOps(vector <Token>);
   int calculateJump(vector <Token>, int, int);
-  int calculateCall(vector <Token>, int, int);
+  int calculateCall(vector <Token>, int, int, int);
   void createExec();
   void appendIOCode();
 };

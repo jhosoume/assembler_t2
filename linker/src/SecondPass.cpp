@@ -60,12 +60,12 @@ void SecondPass::exec() {
         continue;
       }
       operands = parser.groupOps(program.tokens.at(line));
-      cout << "OPERANDS: ";
-      for (auto op : operands) {
-        cout << stringfyOps(op);
-        cout <<  " | ";
-      }
-      cout << endl;
+      // cout << "OPERANDS: ";
+      // for (auto op : operands) {
+      //   cout << stringfyOps(op);
+      //   cout <<  " | ";
+      // }
+      // cout << endl;
       if (tokens.front().type == TokenType::INSTRUCTION_TOKEN) {
         if (tokens.front().tvalue == "ADD") {
           text_code.push_back('\x03');
@@ -128,7 +128,7 @@ void SecondPass::exec() {
             }
 
           } else if (operands.front().front().tvalue == "EDX") {
-            text_code.push_back('\x89');
+            text_code.push_back('\x8b');
             text_code.push_back('\x15');
             location = getAddrValueFromOperand(operands.back(), line);
             getBytes(bigToLittle(location), bytes);
@@ -147,7 +147,7 @@ void SecondPass::exec() {
             text_code.push_back('\x90');
 
           } else if (operands.back().front().tvalue == "EDX") {
-            text_code.push_back('\x8b');
+            text_code.push_back('\x89');
             text_code.push_back('\x15');
             location = getAddrValueFromOperand(operands.front(), line);
             getBytes(bigToLittle(location), bytes);
@@ -238,6 +238,7 @@ void SecondPass::exec() {
             text_code.push_back('\x90');
 
           } else if (operands.front().front().tvalue == "DWORD") {
+            if (operands.back().front().type == TokenType::SYMBOL) {
               text_code.push_back('\x68');
               tokens_no_dword.assign(operands.back().begin() + 1, operands.back().end());
               location = getAddrValueFromOperand(tokens_no_dword, line);
@@ -246,8 +247,23 @@ void SecondPass::exec() {
                 text_code.push_back(bytes[indx]);
               }
               text_code.push_back('\x90');
-          }
+            } else {
+              text_code.push_back('\x6a');
+              int value;
 
+              if (operands.back().front().type == TokenType::NUMBER_HEX) {
+                value = std::stoi(operands.back().front().tvalue, nullptr, 16);
+              } else if (operands.back().front().type == TokenType::NUMBER_DECIMAL) {
+                value = std::stoi(operands.back().front().tvalue);
+              }
+              getBytes(bigToLittle(value), bytes);
+              for (int indx = 0; indx < 4; ++indx){
+                text_code.push_back(bytes[indx]);
+              }
+              text_code.push_back('\x90');
+
+            }
+          }
         } else if (tokens.front().tvalue == "POP") {
           if (operands.front().front().tvalue == "EAX") {
             text_code.push_back('\x58');
@@ -264,6 +280,7 @@ void SecondPass::exec() {
             text_code.push_back('\x90');
             text_code.push_back('\x90');
             text_code.push_back('\x90');
+          }
 
         } else if (tokens.front().tvalue == "INT") {
             // int 80h
@@ -274,15 +291,110 @@ void SecondPass::exec() {
             text_code.push_back('\x90');
             text_code.push_back('\x90');
 
+        } else if (tokens.front().tvalue == "CALL") {
+          if (operands.back().front().tvalue == "READCHAR") {
+            text_code.push_back('\xe8');
+            location = calculateJump(operands.front(), program_counter, line);
+            getBytes(bigToLittle(location), bytes);
+            for (int indx = 0; indx < 4; ++indx){
+              text_code.push_back(bytes[indx]);
+            }
+            text_code.push_back('\x90');
+
+          } else if (operands.back().front().tvalue == "WRITECHAR") {
+            text_code.push_back('\xe8');
+            location = calculateCall(operands.front(), program_counter, line, offset_WriteChar);
+            getBytes(bigToLittle(location), bytes);
+            for (int indx = 0; indx < 4; ++indx){
+              text_code.push_back(bytes[indx]);
+            }
+            text_code.push_back('\x90');
+
+          } else if (operands.back().front().tvalue == "READINTEGERADDR") {
+            text_code.push_back('\xe8');
+            location = calculateCall(operands.front(), program_counter, line, offset_ReadInt);
+            getBytes(bigToLittle(location), bytes);
+            for (int indx = 0; indx < 4; ++indx){
+              text_code.push_back(bytes[indx]);
+            }
+            text_code.push_back('\x90');
+
+          } else if (operands.back().front().tvalue == "WRITEINTEGERADDR") {
+            text_code.push_back('\xe8');
+            location = calculateCall(operands.front(), program_counter, line, offset_WriteInt);
+            getBytes(bigToLittle(location), bytes);
+            for (int indx = 0; indx < 4; ++indx){
+              text_code.push_back(bytes[indx]);
+            }
+            text_code.push_back('\x90');
+
+          } else if (operands.back().front().tvalue == "READHEXA") {
+            text_code.push_back('\xe8');
+            location = calculateCall(operands.front(), program_counter, line, offset_ReadHex);
+            getBytes(bigToLittle(location), bytes);
+            for (int indx = 0; indx < 4; ++indx){
+              text_code.push_back(bytes[indx]);
+            }
+            text_code.push_back('\x90');
+
+          } else if (operands.back().front().tvalue == "WRITEHEXA") {
+            text_code.push_back('\xe8');
+            location = calculateCall(operands.front(), program_counter, line, offset_WriteHex);
+            getBytes(bigToLittle(location), bytes);
+            for (int indx = 0; indx < 4; ++indx){
+              text_code.push_back(bytes[indx]);
+            }
+            text_code.push_back('\x90');
+
+          } else if (operands.back().front().tvalue == "READSTRING") {
+            text_code.push_back('\xe8');
+            location = calculateCall(operands.front(), program_counter, line, offset_ReadString);
+            getBytes(bigToLittle(location), bytes);
+            for (int indx = 0; indx < 4; ++indx){
+              text_code.push_back(bytes[indx]);
+            }
+            text_code.push_back('\x90');
+
+          } else if (operands.back().front().tvalue == "WRITESTRING") {
+            text_code.push_back('\xe8');
+            location = calculateCall(operands.front(), program_counter, line, offset_WriteString);
+            getBytes(bigToLittle(location), bytes);
+            for (int indx = 0; indx < 4; ++indx){
+              text_code.push_back(bytes[indx]);
+            }
+            text_code.push_back('\x90');
+
           }
         } // CLOSE CASES
       } // Instruction CLOSE
     } else if (data_section) {
+      int num = 0;
+      operands = parser.groupOps(program.tokens.at(line));
+      program_counter += (operands.size() * 4);
+      for (const auto op : operands) {
+        if (op.front().type == TokenType::NUMBER_HEX) {
+          num = std::stoi(op.front().tvalue, nullptr, 16);
+        } else if (op.front().type == TokenType::NUMBER_DECIMAL) {
+          num = std::stoi(op.front().tvalue);
+        }
+        getBytes(bigToLittle(num), bytes);
+        for (int indx = 0; indx < 4; ++indx){
+          data_code.push_back(bytes[indx]);
+        }
+
+      }
+
+    } else {
+      if (program.tokens.at(line).front().tvalue == "SECTION" &&
+          program.tokens.at(line).back().tvalue == ".DATA") {
+        data_section = true;
+      }
     }
 
   }
   appendIOCode();
   showTextCode();
+  showDataCode();
   createExec();
 }
 
@@ -303,11 +415,23 @@ void SecondPass::showObjectCode() {
 }
 
 void SecondPass::showTextCode() {
+  cout << "TEXT SECTION " << endl;
     for (int indx = 0; indx < text_code.size(); ++indx) {
       if (indx % 6 == 0) {
         cout << endl;
       }
       cout << hex(text_code.at(indx)) << " ";
+    }
+    cout << endl;
+}
+
+void SecondPass::showDataCode() {
+  cout << "DATA SECTION " << endl;
+    for (int indx = 0; indx < data_code.size(); ++indx) {
+      if (indx % 4 == 0) {
+        cout << endl;
+      }
+      cout << hex(data_code.at(indx)) << " ";
     }
     cout << endl;
 }
@@ -371,13 +495,16 @@ string SecondPass::stringfyOps(vector <Token> op) {
 
 int SecondPass::calculateJump(vector <Token> operand, int pc, int line) {
   int location = getAddrValueFromOperand(operand, line);
-  cout << "JUMP l:" << location << "  pc: " << pc;
-  cout << " r: " << (location - pc) <<  endl;
+  // cout << "JUMP l:" << location << "  pc: " << pc;
+  // cout << " r: " << (location - pc) <<  endl;
   return location - pc;
 }
 
-int SecondPass::calculateCall(vector <Token> operand, int pc, int line) {
-  return -1;
+int SecondPass::calculateCall(vector <Token> operand, int pc, int line, int offset) {
+  int base_addr = symbol_table.getSymbolAddress("READCHAR");
+  // cout << "JUMP l:" << base_addr << "  pc: " << pc;
+  // cout << " r: " << offset <<  endl;
+  return (base_addr + offset + 1) - pc;
 }
 
 void SecondPass::appendIOCode() {

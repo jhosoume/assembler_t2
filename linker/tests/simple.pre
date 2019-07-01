@@ -1,29 +1,7 @@
 GLOBAL _START 
 SECTION .TEXT 
-_START : PUSH EAX 
-PUSH DWORD C 
-CALL READCHAR 
-POP EDX 
-POP EAX 
-PUSH EAX 
-PUSH DWORD S 
-PUSH DWORD 100 
-CALL READSTRING 
-POP EDX 
-POP EDX 
-POP EAX 
-MOV EDX , [ C ] 
-MOV [ S + 4 ] , EDX 
-PUSH DWORD C 
-CALL WRITECHAR 
-POP EDX 
-PUSH EAX 
-PUSH DWORD S 
-PUSH DWORD 100 
-CALL WRITESTRING 
-POP EDX 
-POP EDX 
-POP EAX 
+_START : MOV EDX , [ A ] 
+MOV [ B ] , EDX 
 MOV EAX , 1 
 MOV EBX , 0 
 INT 80H 
@@ -177,11 +155,7 @@ SUB EBX , EBX
 MOV BYTE BL , [ ESP + ECX ] 
 CMP BL , 0X3A 
 JL SUB_0X30 
-CMP BL , 0X47 
-JL SUB_0X37 
-SUB_0X57 : SUB BL , 0X57 
-JMP CONTINUERH 
-SUB_0X37 : SUB BL , 0X37 
+SUB BL , 0X37 
 JMP CONTINUERH 
 SUB_0X30 : SUB BL , 0X30 
 CONTINUERH : ADD EAX , EBX 
@@ -212,7 +186,7 @@ CONTINUEWH : MOV [ ESP + ECX ] , EDX
 INC ECX 
 CMP EAX , 0 
 JG GETTING_ALGSWH 
-END_OUTPUTWH : MOV BYTE [ ESP + ECX ] , 0X78 
+END_OUTPUTWH : MOV BYTE [ ESP + ECX ] , 0X58 
 INC ECX 
 MOV BYTE [ ESP + ECX ] , 0X30 
 INC ECX 
@@ -255,5 +229,8 @@ INT 80H
 BREAKWS : LEAVE 
 RET 
 SECTION .DATA 
+B : DD 0 
+A : DD 0 
 C : DD 0 
-S : DD 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 
+D : DD 0 
+DOIS : DD 2 
