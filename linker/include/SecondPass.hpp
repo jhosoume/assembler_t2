@@ -48,11 +48,22 @@ private:
   vector<int> exec_code;
   vector<char> text_code;
   vector<char> data_code;
-  int begin_data = 0x08150020;
+  int begin_data = 0x08148000;
+  int offset_ReadChar = 0;
+  int offset_WriteChar = 45;
+  int offset_ReadInt = 71;
+  int offset_WriteInt = 207;
+  int offset_ReadHex = 349;
+  int offset_WriteHex = 463;
+  int offset_ReadString = 576;
+  int offset_WriteString = 600;
   void getBytes(int, char []);
   int bigToLittle(int);
   string stringfyOps(vector <Token>);
+  int calculateJump(vector <Token>, int, int);
+  int calculateCall(vector <Token>, int, int);
   void createExec();
+  void appendIOCode();
 };
 
 

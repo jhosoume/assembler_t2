@@ -1,5 +1,13 @@
 #include "SecondPass.hpp"
 
+int convertChar(char bar) {
+    if ( (int) bar < 58) {
+      return (int) bar - 48;
+    } else {
+      return (int) bar - 87;
+    }
+}
+
 struct HexCharStruct {
   unsigned char c;
   HexCharStruct(unsigned char _c) : c(_c) { }
@@ -7,7 +15,7 @@ struct HexCharStruct {
 
 inline std::ostream& operator<<(std::ostream& o,
                                 const HexCharStruct& hs) {
-  return (o << std::hex << (int)hs.c);
+  return ( o << std::hex << (int) hs.c );
 }
 
 inline HexCharStruct hex(unsigned char _c) {
@@ -29,11 +37,13 @@ SecondPass::SecondPass(const Parser &parser,
 void SecondPass::exec() {
   // Open file for writing the object file
   vector<Token> tokens;
+  vector<Token> tokens_no_dword;
   vector < vector<Token> > operands;
   bool text_section = true;
   bool data_section = false;
   int location;
   char bytes[4];
+  int program_counter = 0;
   for (unsigned int line = 0; line < program.tokens.size(); ++line) {
     // cout << line << " ";
     tokens = program.tokens.at(line);
@@ -43,6 +53,8 @@ void SecondPass::exec() {
       tokens.assign(tokens.begin() + 2, tokens.end());
     }
     if (text_section) {
+      program_counter += parser.calculateSizeOfExpression(program.tokens.at(line), line);
+      cout << "PC = " << program_counter << " INST: " << program.tokens.at(line).front().tvalue << endl;
       if (program.tokens.at(line).front().tvalue == "READCHAR") {
         text_section = false;
         continue;
@@ -63,6 +75,7 @@ void SecondPass::exec() {
           for (int indx = 0; indx < 4; ++indx){
             text_code.push_back(bytes[indx]);
           }
+
         } else if (tokens.front().tvalue == "SUB") {
           text_code.push_back('\x2b');
           text_code.push_back('\x05');
@@ -71,12 +84,204 @@ void SecondPass::exec() {
           for (int indx = 0; indx < 4; ++indx){
             text_code.push_back(bytes[indx]);
           }
-        }
-      }
-    } else if (data_section) {
 
+        } else if (tokens.front().tvalue == "MOV") {
+          // MOV THAT THE REGISTER IS THE DESTINATION
+          if (operands.front().front().tvalue == "EAX") {
+            if (operands.back().front().tvalue == "1") {
+              // mov eax, 0
+              text_code.push_back('\xb8');
+              text_code.push_back('\x01');
+              text_code.push_back('\x00');
+              text_code.push_back('\x00');
+              text_code.push_back('\x00');
+              text_code.push_back('\x90');
+
+            } else {
+              text_code.push_back('\xa1');
+              location = getAddrValueFromOperand(operands.back(), line);
+              getBytes(bigToLittle(location), bytes);
+              for (int indx = 0; indx < 4; ++indx){
+                text_code.push_back(bytes[indx]);
+              }
+              text_code.push_back('\x90');
+            }
+          } else if (operands.front().front().tvalue == "EBX") {
+            if (operands.back().front().tvalue == "0") {
+              // mov eax, 0
+              text_code.push_back('\xbb');
+              text_code.push_back('\x00');
+              text_code.push_back('\x00');
+              text_code.push_back('\x00');
+              text_code.push_back('\x00');
+              text_code.push_back('\x90');
+
+            } else {
+              text_code.push_back('\x8b');
+              text_code.push_back('\x1d');
+              location = getAddrValueFromOperand(operands.back(), line);
+              getBytes(bigToLittle(location), bytes);
+              for (int indx = 0; indx < 4; ++indx){
+                text_code.push_back(bytes[indx]);
+              }
+
+            }
+
+          } else if (operands.front().front().tvalue == "EDX") {
+            text_code.push_back('\x89');
+            text_code.push_back('\x15');
+            location = getAddrValueFromOperand(operands.back(), line);
+            getBytes(bigToLittle(location), bytes);
+            for (int indx = 0; indx < 4; ++indx){
+              text_code.push_back(bytes[indx]);
+            }
+
+          // MOV THAT THE MEMORY IS THE DESTINATION (REG IN THE LAST OP)
+          } else if (operands.back().front().tvalue == "EAX") {
+            text_code.push_back('\xa3');
+            location = getAddrValueFromOperand(operands.front(), line);
+            getBytes(bigToLittle(location), bytes);
+            for (int indx = 0; indx < 4; ++indx){
+              text_code.push_back(bytes[indx]);
+            }
+            text_code.push_back('\x90');
+
+          } else if (operands.back().front().tvalue == "EDX") {
+            text_code.push_back('\x8b');
+            text_code.push_back('\x15');
+            location = getAddrValueFromOperand(operands.front(), line);
+            getBytes(bigToLittle(location), bytes);
+            for (int indx = 0; indx < 4; ++indx){
+              text_code.push_back(bytes[indx]);
+            }
+
+          }
+        } else if (tokens.front().tvalue == "IMUL") {
+            // imul eax, ebx
+            text_code.push_back('\x0f');
+            text_code.push_back('\xaf');
+            text_code.push_back('\xc3');
+            text_code.push_back('\x90');
+            text_code.push_back('\x90');
+            text_code.push_back('\x90');
+
+        } else if (tokens.front().tvalue == "CDQ") {
+            // cltd
+            text_code.push_back('\x99');
+            text_code.push_back('\x90');
+            text_code.push_back('\x90');
+            text_code.push_back('\x90');
+            text_code.push_back('\x90');
+            text_code.push_back('\x90');
+
+        } else if (tokens.front().tvalue == "IDIV") {
+            // idiv eax, ebx
+            text_code.push_back('\xf7');
+            text_code.push_back('\xfb');
+            text_code.push_back('\x90');
+            text_code.push_back('\x90');
+            text_code.push_back('\x90');
+            text_code.push_back('\x90');
+
+        } else if (tokens.front().tvalue == "CMP") {
+            // cmp eax, 0
+            text_code.push_back('\x83');
+            text_code.push_back('\xf8');
+            text_code.push_back('\x00');
+            text_code.push_back('\x90');
+            text_code.push_back('\x90');
+            text_code.push_back('\x90');
+
+        } else if (tokens.front().tvalue == "JMP") {
+            text_code.push_back('\xe9');
+            location = calculateJump(operands.front(), program_counter, line);
+            getBytes(bigToLittle(location), bytes);
+            for (int indx = 0; indx < 4; ++indx){
+              text_code.push_back(bytes[indx]);
+            }
+            text_code.push_back('\x90');
+
+        } else if (tokens.front().tvalue == "JL") {
+            text_code.push_back('\x0f');
+            text_code.push_back('\x8c');
+            location = calculateJump(operands.front(), program_counter, line);
+            getBytes(bigToLittle(location), bytes);
+            for (int indx = 0; indx < 4; ++indx){
+              text_code.push_back(bytes[indx]);
+            }
+
+        } else if (tokens.front().tvalue == "JG") {
+            text_code.push_back('\x0f');
+            text_code.push_back('\x8f');
+            location = calculateJump(operands.front(), program_counter, line);
+            getBytes(bigToLittle(location), bytes);
+            for (int indx = 0; indx < 4; ++indx){
+              text_code.push_back(bytes[indx]);
+            }
+
+        } else if (tokens.front().tvalue == "JE") {
+            text_code.push_back('\x0f');
+            text_code.push_back('\x84');
+            location = calculateJump(operands.front(), program_counter, line);
+            getBytes(bigToLittle(location), bytes);
+            for (int indx = 0; indx < 4; ++indx){
+              text_code.push_back(bytes[indx]);
+            }
+
+        } else if (tokens.front().tvalue == "PUSH") {
+          if (operands.front().front().tvalue == "EAX") {
+            text_code.push_back('\x50');
+            text_code.push_back('\x90');
+            text_code.push_back('\x90');
+            text_code.push_back('\x90');
+            text_code.push_back('\x90');
+            text_code.push_back('\x90');
+
+          } else if (operands.front().front().tvalue == "DWORD") {
+              text_code.push_back('\x68');
+              tokens_no_dword.assign(operands.back().begin() + 1, operands.back().end());
+              location = getAddrValueFromOperand(tokens_no_dword, line);
+              getBytes(bigToLittle(location), bytes);
+              for (int indx = 0; indx < 4; ++indx){
+                text_code.push_back(bytes[indx]);
+              }
+              text_code.push_back('\x90');
+          }
+
+        } else if (tokens.front().tvalue == "POP") {
+          if (operands.front().front().tvalue == "EAX") {
+            text_code.push_back('\x58');
+            text_code.push_back('\x90');
+            text_code.push_back('\x90');
+            text_code.push_back('\x90');
+            text_code.push_back('\x90');
+            text_code.push_back('\x90');
+
+          } else if (operands.front().front().tvalue == "EDX") {
+            text_code.push_back('\x5a');
+            text_code.push_back('\x90');
+            text_code.push_back('\x90');
+            text_code.push_back('\x90');
+            text_code.push_back('\x90');
+            text_code.push_back('\x90');
+
+        } else if (tokens.front().tvalue == "INT") {
+            // int 80h
+            text_code.push_back('\xcd');
+            text_code.push_back('\x80');
+            text_code.push_back('\x90');
+            text_code.push_back('\x90');
+            text_code.push_back('\x90');
+            text_code.push_back('\x90');
+
+          }
+        } // CLOSE CASES
+      } // Instruction CLOSE
+    } else if (data_section) {
     }
+
   }
+  appendIOCode();
   showTextCode();
   createExec();
 }
@@ -98,8 +303,11 @@ void SecondPass::showObjectCode() {
 }
 
 void SecondPass::showTextCode() {
-    for (const auto code : text_code) {
-      cout << hex(code) << " ";
+    for (int indx = 0; indx < text_code.size(); ++indx) {
+      if (indx % 6 == 0) {
+        cout << endl;
+      }
+      cout << hex(text_code.at(indx)) << " ";
     }
     cout << endl;
 }
@@ -161,6 +369,44 @@ string SecondPass::stringfyOps(vector <Token> op) {
   return operand;
 }
 
+int SecondPass::calculateJump(vector <Token> operand, int pc, int line) {
+  int location = getAddrValueFromOperand(operand, line);
+  cout << "JUMP l:" << location << "  pc: " << pc;
+  cout << " r: " << (location - pc) <<  endl;
+  return location - pc;
+}
+
+int SecondPass::calculateCall(vector <Token> operand, int pc, int line) {
+  return -1;
+}
+
+void SecondPass::appendIOCode() {
+  std::ifstream ifs("io_code/IOFunc.objdump");
+
+  if (!ifs.is_open()) {
+    cout << "[ERR] Could not open IOFunc code!" << endl;
+    exit(-1);
+  }
+
+  string line;
+  char aux_byte[3000];
+  int i = 0;
+  int j = 0;
+
+  while( std::getline(ifs, line) ) {
+    for ( i = 6; i < 41; i++ ) { //14, 23, 32
+      if ( i == 14 || i == 23 || i == 32) i++;
+      aux_byte[j] = (char) ( (convertChar( (char) line[i]) * 16 ) +
+        ( convertChar( (char) line[++i] ) ));
+      j++;
+    }
+  }
+
+  for (int indx = 0; indx < j; ++indx) {
+    text_code.push_back(aux_byte[indx]);
+  }
+}
+
 void SecondPass::createExec() {
   elfio writer;
 
@@ -175,18 +421,18 @@ void SecondPass::createExec() {
   text_sec->set_flags( SHF_ALLOC | SHF_EXECINSTR );
   text_sec->set_addr_align( 0x10 );
 
-  char text[text_code.size()];
+  char text[0x100000];
   for (int indx = 0; indx < text_code.size(); ++indx) {
     text[indx] = text_code.at(indx);
   }
 
-  text_sec->set_data( text, sizeof( text ) );
+  text_sec->set_data( text, text_code.size() );
   segment* text_seg = writer.segments.add();
   text_seg->set_type( PT_LOAD );
   text_seg->set_virtual_address( 0x08048000 );
   text_seg->set_physical_address( 0x08048000 );
   text_seg->set_flags( PF_X| PF_R );
-  text_seg->set_align( 0x10000 );
+  text_seg->set_align( 0x1000 );
 
   text_seg->add_section_index( text_sec->get_index(),
                                text_sec->get_addr_align() );
@@ -195,10 +441,12 @@ void SecondPass::createExec() {
   data_sec->set_type( SHT_PROGBITS );
   data_sec->set_flags( SHF_ALLOC | SHF_WRITE );
   data_sec->set_addr_align( 0x4 );
-  char data[] = { '\x48', '\x65', '\x6C', '\x6C', '\x6F',// “Hello, World!\n”
-                  '\x2C', '\x20', '\x57', '\x6F', '\x72',
-                  '\x6C', '\x64', '\x21', '\x0A' };
-  data_sec->set_data( data, sizeof( data ) );
+
+  char data[0x100000];
+  for (int indx = 0; indx < data_code.size(); ++indx) {
+    data[indx] = data_code.at(indx);
+  }
+  data_sec->set_data( data, data_code.size() );
 
   segment* data_seg = writer.segments.add();
   data_seg->set_type( PT_LOAD );
