@@ -71,5 +71,14 @@ invert_loopWH:
   mov edx, 10         ;edx tamanho
   int 80h
 
+  write_enterWH:
+    mov BYTE [esp], 0xA
+    ; write result in the screen
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, esp
+    mov edx, 1
+    int 80h
+
   leave
   ret

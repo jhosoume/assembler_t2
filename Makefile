@@ -1,5 +1,5 @@
 CC       := g++
-CFLAGS   := -std=c++11 --pedantic -O3 -Wall
+CFLAGS   := -std=c++11 --pedantic -O3
 
 SRCDIR   := src
 BUILDDIR := build

@@ -12,7 +12,7 @@ void Translate::exec() {
   string aux_string = "";
   nasm_code.push_back("global _start\n");
   for (unsigned int line = 0; line < program.tokens.size(); ++line) {
-    cout << line << " | ";
+    // cout << line << " | ";
     tokens = program.tokens.at(line);
 
     // ADDING LABEL
@@ -214,12 +214,12 @@ void Translate::exec() {
       //FINISH
     }
 
-    for (const auto token : tokens) {
-      cout << token.tvalue << " ";
-    }
-    cout << endl;
+    // for (const auto token : tokens) {
+    //   cout << token.tvalue << " ";
+    // }
+    // cout << endl;
   }
-  showNasmCode();
+  // showNasmCode();
 }
 
 void Translate::writeNasmFile() {
