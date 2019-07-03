@@ -62,12 +62,21 @@ global _start
  global WriteChar
  
  WriteChar:
-     enter 0, 0
+     enter 1, 0
  
      ; write char
      mov eax, 4
      mov ebx, 1
      mov ecx, CHAR_ADDR
+     mov edx, 1
+     int 80h
+ 
+   write_enterWC:
+     mov BYTE [esp], 0xA
+     ; write result in the screen
+     mov eax, 4
+     mov ebx, 1
+     mov ecx, esp
      mov edx, 1
      int 80h
  
@@ -318,6 +327,18 @@ global _start
      mov edx, 12
      int 80h
  
+ 
+   write_enterWI:
+     mov BYTE [esp], 0xA
+     ; write result in the screen
+     mov eax, 4
+     mov ebx, 1
+     mov ecx, esp
+     mov edx, 1
+     int 80h
+ 
+ 
+ 
    breakWI:
      leave
      ret
@@ -372,6 +393,14 @@ global _start
    cmp bl, 0x3A  ;if less than
    jl  sub_0x30
  
+   cmp bl, 0x47
+   jl sub_0x37
+ 
+ sub_0x57:
+   sub bl, 0x57
+   jmp continueRH
+ 
+ sub_0x37:
    sub bl, 0x37
    jmp continueRH
  
@@ -442,7 +471,7 @@ global _start
    jg getting_algsWH
  
  end_outputWH:
-   mov BYTE [esp + ecx], 0x58   ;'x'
+   mov BYTE [esp + ecx], 0x78   ;'x'
    inc ecx
    mov BYTE [esp + ecx], 0x30   ;'0'
    inc ecx         ;ecx = size | index = size - 1
@@ -473,6 +502,15 @@ global _start
    mov ecx, esp        ;ecx endereço
    mov edx, 10         ;edx tamanho
    int 80h
+ 
+   write_enterWH:
+     mov BYTE [esp], 0xA
+     ; write result in the screen
+     mov eax, 4
+     mov ebx, 1
+     mov ecx, esp
+     mov edx, 1
+     int 80h
  
    leave
    ret

@@ -98,12 +98,21 @@ global _start
  global WriteChar
  
  WriteChar:
-     enter 0, 0
+     enter 1, 0
  
      ; write char
      mov eax, 4
      mov ebx, 1
      mov ecx, CHAR_ADDR
+     mov edx, 1
+     int 80h
+ 
+   write_enterWC:
+     mov BYTE [esp], 0xA
+     ; write result in the screen
+     mov eax, 4
+     mov ebx, 1
+     mov ecx, esp
      mov edx, 1
      int 80h
  
@@ -354,6 +363,18 @@ global _start
      mov edx, 12
      int 80h
  
+ 
+   write_enterWI:
+     mov BYTE [esp], 0xA
+     ; write result in the screen
+     mov eax, 4
+     mov ebx, 1
+     mov ecx, esp
+     mov edx, 1
+     int 80h
+ 
+ 
+ 
    breakWI:
      leave
      ret
@@ -517,6 +538,15 @@ global _start
    mov ecx, esp        ;ecx endereço
    mov edx, 10         ;edx tamanho
    int 80h
+ 
+   write_enterWH:
+     mov BYTE [esp], 0xA
+     ; write result in the screen
+     mov eax, 4
+     mov ebx, 1
+     mov ecx, esp
+     mov edx, 1
+     int 80h
  
    leave
    ret
