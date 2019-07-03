@@ -105,10 +105,16 @@ LEAVE
 RET 
 %DEFINE CHAR_ADDR DWORD [ EBP + 8 ] 
 GLOBAL WRITECHAR 
-WRITECHAR : ENTER 0 , 0 
+WRITECHAR : ENTER 1 , 0 
 MOV EAX , 4 
 MOV EBX , 1 
 MOV ECX , CHAR_ADDR 
+MOV EDX , 1 
+INT 80H 
+WRITE_ENTERWC : MOV BYTE [ ESP ] , 0XA 
+MOV EAX , 4 
+MOV EBX , 1 
+MOV ECX , ESP 
 MOV EDX , 1 
 INT 80H 
 LEAVE 
@@ -211,6 +217,12 @@ MOV EBX , 1
 MOV ECX , ESP 
 MOV EDX , 12 
 INT 80H 
+WRITE_ENTERWI : MOV BYTE [ ESP ] , 0XA 
+MOV EAX , 4 
+MOV EBX , 1 
+MOV ECX , ESP 
+MOV EDX , 1 
+INT 80H 
 BREAKWI : LEAVE 
 RET 
 GLOBAL READHEXA 
@@ -296,6 +308,12 @@ MOV EBX , 1
 MOV ECX , ESP 
 MOV EDX , 10 
 INT 80H 
+WRITE_ENTERWH : MOV BYTE [ ESP ] , 0XA 
+MOV EAX , 4 
+MOV EBX , 1 
+MOV ECX , ESP 
+MOV EDX , 1 
+INT 80H 
 LEAVE 
 RET 
 GLOBAL READSTRING 
@@ -322,6 +340,6 @@ ZERO : DD 0
 UM : DD 1 
 DOIS : DD 2 
 TRES : DD 3 
-CINCO : DD 525 
+CINCO : DD 5 
 OLD_DATA : DD 0 , 0 , 0 , 0 , 0 
 INPUTS_DATA : DD 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 

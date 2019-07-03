@@ -1,6 +1,7 @@
 global _start
  section .text
  _start:
+ add eax, [OLD_DATA]
  push eax
  nop
  nop
@@ -33,7 +34,6 @@ global _start
  nop
  nop
  nop
- L2:
  idiv ebx
  nop
  nop
@@ -46,7 +46,6 @@ global _start
  nop
  nop
  nop
- L6:
  mov [TMP_DATA], eax
  nop
  mov eax, [OLD_DATA]
@@ -60,10 +59,8 @@ global _start
  nop
  nop
  nop
- L7:
  push DWORD TMP_DATA
  nop
- L10:
  call WriteIntegerAddr
  nop
  pop edx
@@ -78,7 +75,6 @@ global _start
  nop
  nop
  nop
- L11:
  mov edx, [NEW_DATA]
  mov [OLD_DATA], edx
  mov eax, [OLD_DATA]
@@ -100,8 +96,7 @@ global _start
  nop
  nop
  nop
- nop
- L90: 
+ nop 
 
  ;-----------------------------------------------------
  ; Procedure that reads a char from the keyboard
@@ -627,7 +622,7 @@ global _start
 
  section .data
  DOIS:
- DD 2, 0, 0, 0
+ DD 2
  OLD_DATA:
  DD 0
  NEW_DATA:
